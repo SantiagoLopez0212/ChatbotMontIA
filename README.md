@@ -1,60 +1,136 @@
-# Proyecto Chatbot IA — Re-Arquitecturado
+# MontIA — Chatbot Académico
 
-## Requisitos
-- Node.js 18 o superior y npm.
-- Conexión a Internet (para consultar Crossref, OpenAlex, arXiv, PubMed, DOAJ y Europe PMC).
-- Un navegador para abrir el frontend.
+MontIA es un chatbot académico diseñado con **Bajo Acoplamiento**, **Alta Cohesión** y principios **SOLID**. Utiliza inteligencia artificial (Google Gemini) integrada con múltiples bases de datos científicas y literatura (CrossRef, OpenAlex, Google Books) para asistir en la investigación académica, generar resúmenes, buscar fuentes y construir mapas conceptuales.
 
-## Ejecución paso a paso (local)
-1) Abre una terminal (PowerShell) y cambia al backend:
-   ```bash
-   cd "ProyectoChatbot-main/backend"
-   ```
-2) Instala dependencias del backend:
-   ```bash
-   npm install
-   ```
-3) Inicia la API del chatbot (escucha en `http://localhost:3000`):
-   ```bash
-   npm start
-   ```
-   - Deja esta terminal abierta. Deberías ver: `Servidor API listo en http://localhost:3000`.
-4) (Opcional) Verifica salud de la API en el navegador:
-   - Abre: `http://localhost:3000/health` (responde `{ status: "ok", ... }`).
-5) Abre el frontend en el navegador:
-   - Opción A (rápida): Abre el archivo `ProyectoChatbot-main/frontend/index.html` con doble clic.
-   - Opción B (servidor estático):
-     ```bash
-     npx serve ProyectoChatbot-main/frontend
-     ```
-     y visita la URL indicada.
-6) Prueba el chatbot en la página abierta:
-   - Saludo: `Hola`
-   - Small talk: `¿Quién te creó?`, `¿Qué haces?`
-   - Opinión con resumen: `¿Qué opinas de la inteligencia artificial?`
-   - Referencias (tras una opinión o búsqueda): `Dame las referencias`
-   - Búsqueda con filtros: `Busca artículos sobre ingeniería civil en español desde 2019 autor: Pérez`
-   - Paginación: `más`
+## Características Principales
+- **Autenticación con JWT**: Registro, inicio de sesión y recuperación de contraseña vía correo.
+- **Roles de usuario**: Soporte para usuarios invitados y autenticados (con historial de chat guardado en BD).
+- **Procesamiento de Documentos**: Análisis de archivos PDF subidos o mediante URLs externas para extraer contexto y chatear con los documentos.
+- **Búsqueda Avanzada**: Obtención de artículos filtrando por año, idioma, tipo y acceso abierto.
+- **Mapas Conceptuales**: Generación visual de relaciones entre los artículos encontrados.
+- **IA Generativa**: Respuestas contextuales basadas en los resultados utilizando Google Gemini.
 
-## Variables de entorno (opcional)
-Puedes ajustar el comportamiento del backend definiendo estas variables antes de `npm start`:
-- `PORT` (por defecto `3000`): Puerto del backend.
-- `ALLOWED_ORIGINS` (coma separada): Orígenes permitidos para CORS.
-- `SEARCH_PAGE_SIZE` (por defecto `7`): Cantidad de resultados por página.
-- `RATE_LIMIT_WINDOW_MS` y `RATE_LIMIT_MAX_REQUESTS` (por defecto `60000` y `60`): Ventana y límite del rate limiter.
+---
 
-## Pruebas unitarias (opcional)
-En otra terminal:
+## Requisitos Previos
+
+Para ejecutar este proyecto en tu entorno local necesitas:
+
+1. **Node.js** (v18 o superior)
+2. **MySQL** (v8.0 o superior) corriendo localmente en el puerto 3306.
+3. **Google Gemini API Key**: [Consigue una clave gratuita aquí](https://aistudio.google.com/app/apikey).
+4. Cuenta de **Gmail** (opcional, para enviar correos de recuperación de contraseña). Debe usarse una "Contraseña de aplicación", no la contraseña normal.
+
+---
+
+## 🛠 Instalación y Configuración
+
+### 1. Clonar el repositorio
 ```bash
-cd "ProyectoChatbot-main/backend"
-npm test
+git clone https://github.com/Santiagolopezgo/ChatbotMontIA.git
+cd ChatbotMontIA
 ```
 
-## Solución de problemas
-- 403 CORS: abre el frontend desde `file://` o agrega tu origen a `ALLOWED_ORIGINS`.
-- 429 (demasiadas solicitudes): espera unos segundos o aumenta `RATE_LIMIT_MAX_REQUESTS`.
-- Sin resultados de opinión/búsqueda: revisa tu conexión a Internet o intenta con otro tema.
+### 2. Configurar el Backend
 
-## Arquitectura y calidad
-- Ver `docs/arquitectura.md` (C4/4+1, SOLID, decisiones, atributos).
-- Ver `docs/presentacion.md` (guion y captura de contraste).
+1. Abre una terminal y ve a la carpeta del backend:
+   ```bash
+   cd backend
+   npm install
+   ```
+   
+2. Configura las variables de entorno. Copia el archivo de ejemplo:
+   ```bash
+   cp .env.example .env
+   ```
+   
+3. **Edita el archivo `.env`** recién creado con tus credenciales reales:
+   ```env
+   # Configuración del servidor
+   PORT=3000
+
+   # Configuración de la Base de Datos (ajusta DB_PASSWORD)
+   DB_HOST=127.0.0.1
+   DB_USER=root
+   DB_PASSWORD=tu_contraseña_mysql_aqui
+   DB_NAME=proyecto_chatbot
+   DB_PORT=3306
+
+   # Seguridad JWT
+   JWT_SECRET=escribe_aqui_un_texto_largo_y_secreto
+
+   # Clave de API de Inteligencia Artificial
+   GEMINI_API_KEY=tu_clave_de_gemini_aqui
+
+   # Configuración de correo (para recuperar contraseñas)
+   EMAIL_USER=tu_correo@gmail.com
+   EMAIL_PASS=tu_contraseña_de_aplicacion_gmail
+   ```
+
+*Nota: La base de datos y todas sus tablas se crearán automáticamente al arrancar el servidor si las credenciales de MySQL son correctas.*
+
+### 3. Iniciar el Backend
+Arranca el servidor de la API:
+```bash
+npm start
+# (O usa "npm run dev" si deseas autorecarga en desarrollo)
+```
+Deberías ver en la consola:
+```
+✅ MontIA escuchando en http://localhost:3000
+✅ Base de datos inicializada (tablas verificadas)
+```
+
+---
+
+## 💻 Uso de la Aplicación (Frontend)
+
+El frontend está construido con HTML, CSS, y JavaScript puro y no requiere compilación. Simplemente necesitas servir los archivos estáticos.
+
+### Iniciar el Frontend
+
+**Opción A (Extensión de VS Code):**
+Si usas VS Code, instala la extensión "Live Server". Haz clic derecho sobre `frontend/index.html` y selecciona **"Open with Live Server"**.
+
+**Opción B (Servidor simple con Node.js):**
+Abre una nueva terminal en la raíz del proyecto y ejecuta:
+```bash
+npx serve frontend
+```
+
+### ¿Cómo usar MontIA?
+
+1. **Iniciar Sesión:**
+   Al abrir la aplicación, serás redirigido a `auth.html`.
+   * Si es tu primera vez, **Regístrate** en la pestaña correspondiente.
+   * Tras iniciar sesión, tu JWT se guardará y serás redirigido al chat principal (`index.html`).
+   * *(Opcional)* Puedes usar el botón **"Continuar sin cuenta"** para probar el bot de forma anónima (el historial no se guardará).
+
+2. **Chatear con la IA:**
+   * **Saludos:** "Hola", "¿Qué puedes hacer?"
+   * **Búsquedas:** "Busca artículos sobre inteligencia artificial en español desde el 2020"
+   * **Análisis de PDF:** Sube un archivo mediante el icono del clip y luego pregunta sobre su contenido.
+   * **Resúmenes:** Pide explícitamente sobre el contexto aportado.
+
+3. **Herramientas de Búsqueda:**
+   Cuando la IA te devuelve resultados de investigación, puedes usar las opciones disponibles en cada tarjeta:
+   * 🔗 Abrir el artículo original (DOI u origen web).
+   * 🧠 **"Mapa de Conocimiento":** Se abrirá un diagrama interactivo relacionando conceptos del paper.
+   * 📄 "Formato IEEE": Obtiene la cita formateada para tu bibliografía.
+
+---
+
+## 🏗 Arquitectura y Estructura
+
+El proyecto sigue una arquitectura **Layered (por capas)** basada en Domain-Driven Design (DDD) y aplica estrictamente los principios SOLID.
+
+*   **/routes:** Definición de endpoints separados por dominios (`auth`, `chat`, `history`).
+*   **/controllers:** Empaquetan y validan peticiones HTTP delegándolas a los servicios.
+*   **/services:** Lógica central. Emplean **Chain of Responsibility** para enrutar mensajes del usuario entre distintos `Handlers`.
+*   **/domain**: Gestión del área de negocio y de los estados de interfaz (ej. `SessionManager.js`).
+*   **/adapters:** Implementación del patrón **Strategy** para desacoplar las llamadas a APIs externas (Gemini, CrossRef, OpenAlex).
+
+El servidor está refactorizado implementando Alta Cohesión (cada módulo hace una cosa específica) y Bajo Acoplamiento (los módulos no dependen de la implementación interna de otros, como en el sistema de búsquedas externalizado mediante inyección de dependencias).
+
+---
+*Desarrollado para asistencia en la docencia e investigación académica.*
