@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Bienvenido al Chatbot MontIA, Tu Asistente IA de ayudas bibliográficas</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <style>
+    :root {
+      --primary: #0b5ed7;
+      --bg1: #a1c4fd;
+      --bg2: #c2e9fb;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      font-family: 'Roboto', Arial, sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 960px;
+      padding: 20px;
+    }
+
+    .hero {
+      text-align: center;
+      color: #0a2558;
+      margin-bottom: 18px;
+    }
+
+    .hero h1 {
+      font-size: 2.2rem;
+      margin: 0 0 8px;
+      font-weight: 800;
+      color: #0b5ed7;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
+    }
+
+    .hero p {
+      margin: 0;
+      color: #234;
+    }
+
+    .card {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 18px;
+      background: rgba(255, 255, 255, 0.98);
+      border-radius: 18px;
+      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.06);
+      padding: 18px;
+    }
+
+    .left {
+      padding: 12px;
+    }
+
+    .right {
+      padding: 12px;
+      border-left: 1px solid #e8eef9;
+    }
+
+    .tabs {
+      display: flex;
+      gap: 10px;
+      margin-bottom: 12px;
+    }
+
+    .tab {
+      flex: 1;
+      padding: 10px;
+      border: 1px solid #cfe2ff;
+      background: #e9f2ff;
+      color: #0b5ed7;
+      border-radius: 10px;
+      cursor: pointer;
+      text-align: center;
+      font-weight: 600;
+      transition: 0.3s;
+    }
+
+    .tab.active {
+      background: #0b5ed7;
+      color: #fff;
+    }
+
+    .form {
+      display: none;
+    }
+
+    .form.active {
+      display: block;
+    }
+
+    .field {
+      margin-bottom: 10px;
+    }
+
+    .field label {
+      display: block;
+      margin-bottom: 6px;
+      color: #123;
+      font-weight: 600;
+    }
+
+    .field input {
+      width: 100%;
+      padding: 12px;
+      border: 1.5px solid #bdbdbd;
+      border-radius: 10px;
+      background: #f8fafc;
+      font-size: 1rem;
+    }
+
+    .btn {
+      display: inline-block;
+      width: 100%;
+      padding: 12px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      font-weight: 700;
+      font-size: 1rem;
+      transition: 0.3s;
+    }
+
+    .btn-primary {
+      background: #0b5ed7;
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #094bb0;
+    }
+
+    .btn-google {
+      background: #fff;
+      color: #333;
+      border: 1px solid #e5e9f2;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .muted {
+      color: #666;
+      font-size: 0.92rem;
+      text-align: center;
+    }
+
+    .alert {
+      background: #fff3cd;
+      border: 1px solid #ffec9e;
+      color: #6d5200;
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+      display: none;
+    }
+
+    .success {
+      background: #d1e7dd;
+      border: 1px solid #badbcc;
+      color: #0f5132;
+      display: none;
+      padding: 8px 10px;
+      border-radius: 8px;
+      margin-bottom: 10px;
+    }
+
+    .link {
+      color: var(--primary);
+      cursor: pointer;
+    }
+
+    @media (max-width: 840px) {
+      .card {
+        grid-template-columns: 1fr;
+      }
+
+      .right {
+        border-left: none;
+        border-top: 1px solid #e8eef9;
+      }
+    }
+  </style>
+
+  <script>
+    // Comprobación de sesión existente (token o cookie)
+    document.addEventListener('DOMContentLoaded', async () => {
+      try {
+        const token = localStorage.getItem('auth_token') || '';
+        if (!token) return; // si no hay token, no verifica nada
+
+        const res = await fetch('http://localhost:3000/api/auth/me', {
+          credentials: 'include',
+          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
+        });
+
+        if (res.ok) {
+          const data = await res.json();
+          if (data.user) {
+            // si hay sesión válida, redirigir al chat
+            window.location.href = 'index.html';
+            return;
+          }
+        }
+      } catch (err) {
+        console.warn('No se pudo verificar la sesión:', err);
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <div class="container">
+    <div class="hero">
+      <h1>Bienvenido al Chatbot MontIA</h1>
+      <p>Accede con tu cuenta para comenzar a chatear</p>
+    </div>
+    <div class="card">
+      <!-- Lado izquierdo -->
+      <div class="left">
+        <div class="tabs">
+          <button id="tab-login" class="tab active">Iniciar sesión</button>
+          <button id="tab-register" class="tab">Registrarse</button>
+        </div>
+
+        <div id="msg-error" class="alert"></div>
+        <div id="msg-ok" class="success"></div>
+
+        <!-- Formulario de inicio de sesión -->
+        <form id="form-login" class="form active" autocomplete="on">
+          <div class="field">
+            <label>Email</label>
+            <input type="email" id="login-email" required />
+          </div>
+          <div class="field">
+            <label>Contraseña</label>
+            <input type="password" id="login-password" required />
+          </div>
+          <div style="text-align: right; margin-bottom: 15px;">
+            <span id="link-forgot" class="link" style="font-size: 0.9rem;">¿Olvidaste tu contraseña?</span>
+          </div>
+
+          <button type="submit" class="btn btn-primary">Entrar</button>
+        </form>
+
+        <!-- Formulario de registro -->
+        <form id="form-register" class="form" autocomplete="on">
+          <div class="field">
+            <label>Nombre</label>
+            <input type="text" id="reg-name" minlength="2" required />
+          </div>
+          <div class="field">
+            <label>Email</label>
+            <input type="email" id="reg-email" required />
+          </div>
+          <div class="field">
+            <label>Contraseña (mín. 6 caracteres)</label>
+            <input type="password" id="reg-password" minlength="6" required />
+          </div>
+          <button type="submit" class="btn btn-primary">Crear cuenta</button>
+        </form>
+
+        <!-- Formulario de recuperación -->
+        <form id="form-recovery" class="form" autocomplete="off">
+          <h3 style="margin-top:0; color:#0b5ed7;">Recuperar Contraseña</h3>
+
+          <!-- Paso 1: Solicitar Código -->
+          <div id="step-request">
+            <div class="field">
+              <label>Ingresa tu Email</label>
+              <input type="email" id="rec-email" required />
+            </div>
+            <button type="button" id="btn-send-code" class="btn btn-primary">Enviar Código</button>
+          </div>
+
+          <!-- Paso 2: Verificar y Cambiar -->
+          <div id="step-verify" style="display:none;">
+            <div class="field">
+              <label>Código de 6 dígitos</label>
+              <input type="text" id="rec-code" maxlength="6" required />
+            </div>
+            <div class="field">
+              <label>Nueva Contraseña</label>
+              <input type="password" id="rec-new-pass" minlength="6" required />
+            </div>
+            <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+          </div>
+
+          <p class="muted" style="margin-top:10px;">
+            <span id="link-back-login" class="link">Volver al inicio de sesión</span>
+          </p>
+        </form>
+      </div>
+
+      <!-- Lado derecho -->
+      <div class="right">
+        <button id="btn-google" class="btn btn-google" title="Próximamente">
+          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48">
+            <path fill="#FFC107"
+              d="M43.611,20.083H42V20H24v8h11.303C33.582,32.658,29.197,36,24,36c-6.627,0-12-5.373-12-12s5.373-12,12-12 c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20 c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
+          </svg>
+          <span>Registrarse con Google</span>
+        </button>
+
+        <p class="muted" style="margin-top:10px;">Funcionalidad de Google disponible al configurar OAuth.</p>
+        <hr style="margin:14px 0; border:none; border-top:1px solid #e8eef9;">
+        <p class="muted">¿Ya tienes cuenta? <span id="link-login" class="link">Inicia sesión</span>. ¿Eres nuevo? <span
+            id="link-register" class="link">Regístrate</span>.</p>
+
+        <button id="btn-guest" class="btn" style="margin-top: 20px; background: #6c757d; color: white;">Continuar sin
+          iniciar sesión</button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // CONFIGURACIÓN Y UTILIDADES
+    const API = 'http://localhost:3000';
+    const $ = (s) => document.querySelector(s);
+    const tabLogin = $('#tab-login');
+    const tabRegister = $('#tab-register');
+    const formLogin = $('#form-login');
+    const formRegister = $('#form-register');
+    const msgErr = $('#msg-error');
+    const msgOk = $('#msg-ok');
+
+    const showTab = (mode) => {
+      const login = mode === 'login';
+      tabLogin.classList.toggle('active', login);
+      tabRegister.classList.toggle('active', !login);
+      formLogin.classList.toggle('active', login);
+      formRegister.classList.toggle('active', !login);
+      msgErr.style.display = 'none';
+      msgOk.style.display = 'none';
+    };
+
+    const setErr = (text) => {
+      msgErr.textContent = text;
+      msgErr.style.display = 'block';
+      msgOk.style.display = 'none';
+    };
+
+    const setOk = (text) => {
+      msgOk.textContent = text;
+      msgOk.style.display = 'block';
+      msgErr.style.display = 'none';
+    };
+
+    // EVENTOS DE TABS
+    tabLogin.addEventListener('click', () => showTab('login'));
+    tabRegister.addEventListener('click', () => showTab('register'));
+    $('#link-login').addEventListener('click', () => showTab('login'));
+    $('#link-register').addEventListener('click', () => showTab('register'));
+
+    // LOGIN
+    formLogin.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = $('#login-email').value.trim();
+      const password = $('#login-password').value;
+
+      try {
+        const res = await fetch(`${API}/api/auth/login`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ email, password }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) return setErr(data.error || 'Credenciales inválidas.');
+
+        if (data.token) localStorage.setItem('auth_token', data.token);
+
+        setOk('¡Bienvenido! Redirigiendo...');
+        setTimeout(() => (window.location.href = 'index.html'), 700);
+      } catch (err) {
+        console.error(err);
+        setErr('Error de red. No se pudo conectar al servidor.');
+      }
+    });
+
+    // REGISTRO
+    formRegister.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const name = $('#reg-name').value.trim();
+      const email = $('#reg-email').value.trim();
+      const password = $('#reg-password').value;
+
+      try {
+        const res = await fetch(`${API}/api/auth/register`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          credentials: 'include',
+          body: JSON.stringify({ name, email, password }),
+        });
+
+        const data = await res.json();
+        if (!res.ok) return setErr(data.error || 'Error al registrarse');
+
+        if (data.token) localStorage.setItem('auth_token', data.token);
+
+        setOk('Cuenta creada con exito. Redirigiendo...');
+        setTimeout(() => (window.location.href = 'index.html'), 700);
+      } catch (err) {
+        console.error(err);
+        setErr('Error de red. No se pudo conectar al servidor.');
+      }
+    });
+
+    // BOTÓN GOOGLE (placeholder)
+    $('#btn-google').addEventListener('click', () => {
+      alert('Registro con Google disponible al configurar OAuth en el backend.');
+    });
+
+    // BOTÓN DE INVITADO
+    $('#btn-guest').addEventListener('click', () => {
+      localStorage.removeItem('auth_token'); // Asegurar que no haya token viejo
+      window.location.href = 'index.html';
+    });
+
+    // RECUPERACIÓN DE CONTRASEÑA
+    const formRecovery = $('#form-recovery');
+    const stepRequest = $('#step-request');
+    const stepVerify = $('#step-verify');
+
+    $('#link-forgot').addEventListener('click', () => {
+      formLogin.classList.remove('active');
+      formRegister.classList.remove('active');
+      formRecovery.classList.add('active');
+      tabLogin.classList.remove('active');
+      tabRegister.classList.remove('active');
+      msgErr.style.display = 'none';
+      msgOk.style.display = 'none';
+    });
+
+    $('#link-back-login').addEventListener('click', () => showTab('login'));
+
+    // Enviar Código
+    $('#btn-send-code').addEventListener('click', async () => {
+      const email = $('#rec-email').value.trim();
+      if (!email) return setErr('Ingresa tu email.');
+
+      try {
+        const res = await fetch(`${API}/api/auth/forgot-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email })
+        });
+        const data = await res.json();
+        if (!res.ok) return setErr(data.error);
+
+        setOk(data.message);
+        stepRequest.style.display = 'none';
+        stepVerify.style.display = 'block';
+      } catch (err) {
+        setErr('Error de conexión.');
+      }
+    });
+
+    // Cambiar Contraseña
+    formRecovery.addEventListener('submit', async (e) => {
+      e.preventDefault();
+      const email = $('#rec-email').value.trim();
+      const code = $('#rec-code').value.trim();
+      const newPassword = $('#rec-new-pass').value;
+
+      try {
+        const res = await fetch(`${API}/api/auth/reset-password`, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, code, newPassword })
+        });
+        const data = await res.json();
+        if (!res.ok) return setErr(data.error);
+
+        setOk('Contraseña actualizada. Inicia sesión.');
+        setTimeout(() => showTab('login'), 2000);
+
+        // Reset form
+        stepRequest.style.display = 'block';
+        stepVerify.style.display = 'none';
+        formRecovery.reset();
+      } catch (err) {
+        setErr('Error de conexión.');
+      }
+    });
+  </script>
+</body>
+
+</html>

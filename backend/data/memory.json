@@ -1,0 +1,312 @@
+{
+  "users": {
+    "6a3a4d35-fb75-4d41-afb4-d6a5a80c9bf1": {
+      "profile": {
+        "name": null,
+        "career": null,
+        "job": null,
+        "likes": [],
+        "dislikes": []
+      },
+      "history": [
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1760623672633
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1760623672635
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1760623680398
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1760623680400
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1760623763994
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1760623763997
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1760623896533
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1760623896534
+        },
+        {
+          "role": "user",
+          "text": "hola",
+          "ts": 1760624081173
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1760624081177
+        },
+        {
+          "role": "user",
+          "text": "ada",
+          "ts": 1760624086832
+        },
+        {
+          "role": "user",
+          "text": "aasasa",
+          "ts": 1760624157849
+        },
+        {
+          "role": "user",
+          "text": "hola",
+          "ts": 1760624480915
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1760624480918
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1760624722322
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1760624722325
+        },
+        {
+          "role": "user",
+          "text": "hola",
+          "ts": 1760625001055
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1760625001058
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1760633431866
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1760633431869
+        },
+        {
+          "role": "user",
+          "text": "Que puedes hacer?",
+          "ts": 1760633444444
+        },
+        {
+          "role": "bot",
+          "text": "Puedo responder saludos y buscar artículos. Dime: \"Busca artículos sobre ingeniería civil\"; luego pide \"más\" para paginar.",
+          "ts": 1760633444445
+        },
+        {
+          "role": "user",
+          "text": "Como estas?",
+          "ts": 1760633454255
+        },
+        {
+          "role": "bot",
+          "text": "Estoy bien, ¿y tú?",
+          "ts": 1760633454256
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1760633461630
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1760633461632
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1762628666873
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1762628666877
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1762629220102
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1762629220105
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1762629230232
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1762629230234
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1762629239638
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1762629239640
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1762629419766
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1762629419768
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1762629640220
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1762629640224
+        },
+        {
+          "role": "user",
+          "text": "Ingenieria",
+          "ts": 1762629647368
+        },
+        {
+          "role": "bot",
+          "text": "Aquí tienes algunas referencias sobre \"Ingenieria\":\n1. Redes bayesianas en la ingenieria del software — https://doi.org/10.4272/978-84-9745-204-5.ch10\n2. Peru`s national greenhouse gas inventory 1990 (1996) — https://doi.org/10.2172/631197\n3. Peru mitigation assessment of greenhouse gases -- sector: Energy. Final mitigation report (1996) — https://doi.org/10.2172/631196\n4. Replicated Databases. The Answer to Collaborative Design (2007) — F Alonso, C Gonzalez, L Pastor — https://doi.org/10.3940/rina.iccas.2007.48\n5. Ingenieria Solidaria — https://doi.org/10.16925/issn.1900-3102\n6. Ingenieria del Software (2005) [it] — Ian Sommerville, María Isabel Alfonso Galipienso — https://dialnet.unirioja.es/servlet/libro?codigo=655283\n7. Ingenieria hidraulica en mexico (1987) [es] — H Garduno Velasco — https://biblat.unam.mx/es/revista/ingenieria-mexico-d-f/articulo/ingenieria-hidraulica-en-mexico\n8. Ingenieria de Sistemas Expertos (2004) [es] — Ramón García Martínez, Paola Verónica Britos — http://dl.acm.org/citation.cfm?id=1214877\n9. Revista Tecnica De La Facultad De Ingenieria Universidad Del Zulia (2019) [es] — https://doi.org/10.21311/001\n10. Probabilidad y Estadistica para Ingenieria y Ciencias (2012) [es] — Jay L. Devore — https://bibliotecavirtual.defensa.gob.es/BVMDefensa/es/consulta/registro.do?id=657000\n11. On the complexity of the generalized Q2R automaton (2021) — Eric Goles, Marco Montalva-Medel, Pedro Montealegre, Martín  — http://arxiv.org/abs/2108.03335v1\n12. Performance Evaluation of a Substrate Integrated Waveguide Antenna for Vehicular Networks (2019) — Kevin Delgadillo, Cesar Rodriguez, Wilder Castellanos, Hecto — http://arxiv.org/abs/2001.01626v1\n13. Elementos de ingeniería de explotación de la información: réplica y algunos trazos sobre teoría informática (2013) — Rodrigo Lopez-Pablos — http://arxiv.org/abs/1312.4076v1\n14. Characterizing a CCD detector for astronomical purposes: OAUNI Project (2017) — Antonio Pereyra, Maria I. Zevallos, Jose Ricra, Julio C. Tel — http://arxiv.org/abs/1703.04836v1\n15. Evaluation of quality scalability techniques for video transmission (2021) — Wilder Castellanos — http://arxiv.org/abs/2101.04790v1\n16. Determining Histone Posttranslational Modifications Along the Cell Cycle in Trypanosoma cruzi by Flow Cytometry. (2026) — López MDR, Alonso GD, Ocampo J. — https://doi.org/10.1007/978-1-0716-4848-3_23\n17. Collagen/rGO/tannin hydrogels with a programmable biointerface for tunable electrical conductivity and antioxidant capa… (2025) — González L, Ruiz I, Raposo M, Aguayo C — https://doi.org/10.1016/j.colsurfb.2025.115176\n18. Verification and validation of the horseradish peroxidase (HRP)-mediated enzymatic cross-linking in collagen/PEG hydrog… (2025) — González L, Ruiz I, Valerio O, Aguayo C — https://doi.org/10.1016/j.ijbiomac.2025.147795\n19. Dynamic life cycle assessment of climate change impacts of hydrogen production from energy crops. (2025) — Romero-Piñeiro L, Villanueva-Perales AL, Alonso-Fariñas B, H — https://doi.org/10.1016/j.scitotenv.2025.180689\n20. Use of constructed wetlands in Latin America: Assessment of current status, opportunities and challenges in Mexico, Chi… (2025) — Zurita F, Vera-Puerto IL, Maine A, Arias C — https://doi.org/10.1016/j.jenvman.2025.127900\n\nDi \"más\" para ver más resultados. Puedes filtrar con: autor: Apellido; en español; desde 2019; hasta 2024.",
+          "ts": 1762629648816
+        },
+        {
+          "role": "user",
+          "text": "Buscar articulos sobre ingenieria de sistemas",
+          "ts": 1762629665918
+        },
+        {
+          "role": "bot",
+          "text": "Aquí tienes algunas referencias sobre \"sistemas\":\n1. Revista SISTEMAS — https://doi.org/10.29236/sistemas\n2. Apéndice E: (2018) — https://doi.org/10.2307/j.ctv14rmp2z.15\n3. Tecnologías disruptivas y emergentes (2025) — Revista Sistemas — https://doi.org/10.29236/sistemas.n176a2\n4. Otros sistemas penales (2014) — https://doi.org/10.2307/j.ctv1ks0bmp.7\n5. Ciberseguridad en sistemas espaciales (2025) — Jeimy José Cano Martínez — https://doi.org/10.29236/sistemas.n174a6\n6. Deep Residual Learning for Image Recognition (2016) [en] — Kaiming He, Xiangyu Zhang, Shaoqing Ren, Jian Sun — https://doi.org/10.1109/cvpr.2016.90\n7. Sistema Brasileiro de Classificação de Solos. (2018) [pt] — H. G. dos Santos, P. K. T. Jacomine, Lúcia Helena Cunha dos  — http://livimagens.sct.embrapa.br/amostras/00053080.pdf\n8. Un sistema de clasificación de los diseños de investigación en psicología (2013) [es] — Manuel Ato, Juan José López García, Ana Benavente — https://doi.org/10.6018/analesps.29.3.178511\n9. Universidad de Oviedo. Departamento de Biología de Organismos y Sistemas: FCO-Briof (2015) [es] — Miguel Antonio Fernández Márquez — https://doi.org/10.15468/ciuxge\n10. Modificaciones al Sistema de Clasificación Climática de Köppen (2004) [es] — Enriqueta García — http://www.librosoa.unam.mx/handle/123456789/1372\n11. Semi-automatic vectorization of linear networks on rasterized cartographic maps (2005) — Carlos Miravet, Enrique Coiras, Javier Santamaria — http://arxiv.org/abs/cs/0503056v1\n12. C-orthocenter and C-orthocentric systems in Minkowski planes (2014) — Tobías de Jesús Rosas Soto — http://arxiv.org/abs/1409.0248v1\n13. Estudio de la Experiencia de Usuario mediante un Sistema de Dashboards de Análisis de Aprendizaje Multimodal (2023) — Álvaro Becerra, Roberto Daza, Ruth Cobos, Aythami Morales — http://arxiv.org/abs/2307.10346v1\n14. A [in]Segurança dos Sistemas Governamentais Brasileiros: Um Estudo de Caso em Sistemas Web e Redes Abertas (2021) — Marcus Botacin, André Grégio — http://arxiv.org/abs/2109.06068v1\n15. Explorando Sistemas Hamiltonianos II: A Natureza de Pontos de Equilibrio Degenerados (2007) — G. A. Monerat, E. V. Correa Silva, G. Oliveira-Neto, P. H. A — http://arxiv.org/abs/0710.4970v1\n16. Thermal variability and diet interaction as driver of developmental overwintering in Drosophila buzzatii. (2025) [eng] — Kreiman L, Careaga V, Soto EM, Peluso D — https://pubmed.ncbi.nlm.nih.gov/41203758/\n17. The importance of disease coding following the diagnosis of chronic kidney disease: From ICD-10 code N18.9 to the role … (2025) [eng] — Troya MI, Bover J, Cia Hidalgo A, Malumbres S — https://pubmed.ncbi.nlm.nih.gov/41203527/\n18. Impact of SARS-CoV-2 infection on perioperative mortality. (2025) [eng] — García BA, Marchán-López Á, Pousada HJC, Lema ER — https://pubmed.ncbi.nlm.nih.gov/41201636/\n19. Bacillus velezensis Bac-9, isolated from kefir, possesses antifungal activity and improves resistance of tomato plant a… (2025) [eng] — Pérez-Rueda E, Roblero-Aguilar A, López-González C, Domíngue — https://pubmed.ncbi.nlm.nih.gov/41199172/\n20. Quantum interference and occupation control in high harmonic generation from monolayer WS(2). (2025) [eng] — Kim M, Kim T, Galler A, Kim D — https://pubmed.ncbi.nlm.nih.gov/41198670/\n21. Integrando instrumentos econômicos aos sistemas agroflorestais: revisão de escopo sobre financiamento de práticas agríc… (2025) — Feltrin Puttini B, Naidhig D, Dourado dos Reis G, Icassatti  — https://doi.org/10.1590/scielopreprints.13486\n22. Favorable strategies and barriers to the attainment of resilience in healthcare systems: scoping review. (2025) — Ferreira RGLA, Lemos HP, Albuquerque GA, Aguiar ASW — https://doi.org/10.1590/0102-311xen227624\n23. Meta-identidad y plataformas digitales: disputas por la transparencia y el control en la creación algorítmica de las id… (2025) — Ferreira AH, Trevisan ACT. — https://doi.org/10.1590/scielopreprints.13438\n24. Meta-identidade e plataformas digitais: disputas por transparência e controle na criação algorítmica das identidades pe… (2025) — Ferreira AH, Trevisan AC. — https://doi.org/10.1590/scielopreprints.13161\n25. Scarce data, noisy inferences and overfitting: the hidden flaws in ecological dynamics modelling. (2025) — Castro M, Vida R, Galeano J, Cuesta JA. — https://doi.org/10.1098/rsif.2025.0183\n\nDi \"más\" para ver más resultados. Puedes filtrar con: autor: Apellido; en español; desde 2019; hasta 2024.",
+          "ts": 1762629667052
+        },
+        {
+          "role": "user",
+          "text": "Busca articulos sobre",
+          "ts": 1762629682137
+        },
+        {
+          "role": "bot",
+          "text": "Aquí tienes algunas referencias sobre \"Busca articulos sobre\":\n1. articulos-de-varies-diarios-argentinos-sobre-la-desaparicion-y-muerte-de-horacio-alberto-castro-june-1981-8-pp — https://doi.org/10.1163/2210-7975_hrd-0382-0006\n2. Obras completas de Buffon. Historia de los animales : aumentadas con articulos suplementarios sobre diversos animales n… (1833) — Georges Louis Leclerc Buffon, Frédéric Cuvier — https://doi.org/10.5962/bhl.title.126734\n3. articulos-sobre-el-sobreseimiento-definitivo-de-los-integrantes-del-centro-de-estudios-legales-y-sociales-15-y-16-de-ma… — https://doi.org/10.1163/2210-7975_hrd-0382-0005\n4. Articulos Religiosos (1997) — https://doi.org/10.2307/j.ctv201xjdc.23\n5. A ordem informacional dialógica: estudo sobre a busca de informação em educação — Ivete Pieruccini — https://doi.org/10.11606/t.27.2004.tde-14032005-144512\n6. Colonialidad y género (2008) [es] — María Lugones — https://doi.org/10.25058/20112742.340\n7. Espacio, lugar y movimientos sociales: hacia una \"espacialidad de resistencia\" (2002) [es] — Ulrich Oslender — https://doi.org/10.1344/sn2002.6.448\n8. Complejidad, educación y transdisciplinariedad (2002) [es] — Raúl Domingo ￼Motta — https://doi.org/10.32735/s0718-6568/2002-n3-186\n9. La tutela de los derechos económicos, sociales y culturales en el artículo 26 de la Convención Americana sobre Derechos… (2007) [es] — Julieta Rossi, Víctor Abramovich — http://dialnet.unirioja.es/servlet/oaiart?codigo=2354628\n10. El racismo antirom/antigitano y la opción decolonial (2016) [es] — Helios F. Garcés — https://doi.org/10.25058/20112742.82\n11. Brane Worlds, the Subanthropic Principle and the Undetectability Conjecture (2003) — Beatriz Gato-Rivera — http://arxiv.org/abs/physics/0308078v4\n12. Aislantes Topológicos (2020) — A. Martín-Ruiz — http://arxiv.org/abs/2001.08156v1\n13. Lost and Found: Overcoming Detector Failures in Online Multi-Object Tracking (2024) — Lorenzo Vaquero, Yihong Xu, Xavier Alameda-Pineda, Victor M. — http://arxiv.org/abs/2407.10151v2\n14. BUSCA: A Telescope Instrumentation for Simultaneous Imaging in 4 Optical Bands (1999) — K. Reif, K. Bagschik, K. S. de Boer, J. Schmoll — http://arxiv.org/abs/astro-ph/9903177v1\n15. Las actividades de laboratorio en Física: un cambio en la estructura a favor del conocimiento científico (2024) — Andrea Pereira, Álvaro Suárez — http://arxiv.org/abs/2406.10151v1\n16. Complementary therapies for the management of attention deficit hyperactivity disorder in children: a scoping review. (2025) — Szychta LF, Sombra SEL, Lima GA, Ventura MWS — https://doi.org/10.1590/1518-8345.7915.4701\n17. Internationalization of scientific publishing in a multipolar world. (2025) — Carvalho MS, Lima LD, Alves LC. — https://doi.org/10.1590/0102-311xen067325\n18. Women's knowledge about Intrauterine Device and user satisfaction in Brazil: a systematic review. (2025) — Sousa COGL, Reis SND, Andrade GN, Santos BNSD — https://doi.org/10.1590/1980-220x-reeusp-2024-0262en\n19. Quality of life assessment instruments for radiodermatitis in cancer patients: scoping review. (2025) — Lopes LM, Neiva BN, Aguiar BRL, Gomes P — https://doi.org/10.1590/1518-8345.7739.4698\n20. [The International Collaboration of Pharmacy Journal Editors (ICPJE) formally constituted to foster quality around clin… (2025) — Alves Da Costa F, Fernandez-Llimos F, Desselle S, Arnet I — https://doi.org/10.33620/fc.2173-9218.(2025).08\n\nDi \"más\" para ver más resultados. Puedes filtrar con: autor: Apellido; en español; desde 2019; hasta 2024.",
+          "ts": 1762629683045
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1762629820519
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1762629820522
+        },
+        {
+          "role": "user",
+          "text": "cpawkwka",
+          "ts": 1762629824354
+        },
+        {
+          "role": "user",
+          "text": "Ingenieria",
+          "ts": 1762629830769
+        },
+        {
+          "role": "bot",
+          "text": "Aquí tienes algunas referencias sobre \"Ingenieria\":\n1. Redes bayesianas en la ingenieria del software — https://doi.org/10.4272/978-84-9745-204-5.ch10\n2. Peru`s national greenhouse gas inventory 1990 (1996) — https://doi.org/10.2172/631197\n3. Peru mitigation assessment of greenhouse gases -- sector: Energy. Final mitigation report (1996) — https://doi.org/10.2172/631196\n4. Replicated Databases. The Answer to Collaborative Design (2007) — F Alonso, C Gonzalez, L Pastor — https://doi.org/10.3940/rina.iccas.2007.48\n5. Ingenieria Solidaria — https://doi.org/10.16925/issn.1900-3102\n6. Ingenieria del Software (2005) [it] — Ian Sommerville, María Isabel Alfonso Galipienso — https://dialnet.unirioja.es/servlet/libro?codigo=655283\n7. Ingenieria hidraulica en mexico (1987) [es] — H Garduno Velasco — https://biblat.unam.mx/es/revista/ingenieria-mexico-d-f/articulo/ingenieria-hidraulica-en-mexico\n8. Ingenieria de Sistemas Expertos (2004) [es] — Ramón García Martínez, Paola Verónica Britos — http://dl.acm.org/citation.cfm?id=1214877\n9. Revista Tecnica De La Facultad De Ingenieria Universidad Del Zulia (2019) [es] — https://doi.org/10.21311/001\n10. Probabilidad y Estadistica para Ingenieria y Ciencias (2012) [es] — Jay L. Devore — https://bibliotecavirtual.defensa.gob.es/BVMDefensa/es/consulta/registro.do?id=657000\n11. On the complexity of the generalized Q2R automaton (2021) — Eric Goles, Marco Montalva-Medel, Pedro Montealegre, Martín  — http://arxiv.org/abs/2108.03335v1\n12. Performance Evaluation of a Substrate Integrated Waveguide Antenna for Vehicular Networks (2019) — Kevin Delgadillo, Cesar Rodriguez, Wilder Castellanos, Hecto — http://arxiv.org/abs/2001.01626v1\n13. Elementos de ingeniería de explotación de la información: réplica y algunos trazos sobre teoría informática (2013) — Rodrigo Lopez-Pablos — http://arxiv.org/abs/1312.4076v1\n14. Characterizing a CCD detector for astronomical purposes: OAUNI Project (2017) — Antonio Pereyra, Maria I. Zevallos, Jose Ricra, Julio C. Tel — http://arxiv.org/abs/1703.04836v1\n15. Evaluation of quality scalability techniques for video transmission (2021) — Wilder Castellanos — http://arxiv.org/abs/2101.04790v1\n16. Determining Histone Posttranslational Modifications Along the Cell Cycle in Trypanosoma cruzi by Flow Cytometry. (2026) — López MDR, Alonso GD, Ocampo J. — https://doi.org/10.1007/978-1-0716-4848-3_23\n17. Collagen/rGO/tannin hydrogels with a programmable biointerface for tunable electrical conductivity and antioxidant capa… (2025) — González L, Ruiz I, Raposo M, Aguayo C — https://doi.org/10.1016/j.colsurfb.2025.115176\n18. Verification and validation of the horseradish peroxidase (HRP)-mediated enzymatic cross-linking in collagen/PEG hydrog… (2025) — González L, Ruiz I, Valerio O, Aguayo C — https://doi.org/10.1016/j.ijbiomac.2025.147795\n19. Dynamic life cycle assessment of climate change impacts of hydrogen production from energy crops. (2025) — Romero-Piñeiro L, Villanueva-Perales AL, Alonso-Fariñas B, H — https://doi.org/10.1016/j.scitotenv.2025.180689\n20. Use of constructed wetlands in Latin America: Assessment of current status, opportunities and challenges in Mexico, Chi… (2025) — Zurita F, Vera-Puerto IL, Maine A, Arias C — https://doi.org/10.1016/j.jenvman.2025.127900\n\nDi \"más\" para ver más resultados. Puedes filtrar con: autor: Apellido; en español; desde 2019; hasta 2024.",
+          "ts": 1762629831591
+        },
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1762630258450
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1762630258458
+        }
+      ]
+    },
+    "local-test": {
+      "profile": {
+        "name": null,
+        "career": null,
+        "job": null,
+        "likes": [],
+        "dislikes": []
+      },
+      "history": [
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1760624526719
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1760624526722
+        }
+      ]
+    },
+    "e27407c0-0db3-491a-9fd5-159d6eb33712": {
+      "profile": {
+        "name": null,
+        "career": null,
+        "job": null,
+        "likes": [],
+        "dislikes": []
+      },
+      "history": [
+        {
+          "role": "user",
+          "text": "Hola",
+          "ts": 1760625227427
+        },
+        {
+          "role": "bot",
+          "text": "¡Hola!",
+          "ts": 1760625227431
+        }
+      ]
+    }
+  }
+}

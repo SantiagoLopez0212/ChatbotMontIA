@@ -1,0 +1,155 @@
+﻿<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>MontIA Chatbot</title>
+  <link rel="stylesheet" href="style.css" />
+  <!-- vis.js para el Mapa Conceptual Interactivo -->
+  <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
+  <script>
+    // Verificación de sesión (opcional)
+    document.addEventListener('DOMContentLoaded', async () => {
+      const token = localStorage.getItem('auth_token');
+      if (!token) {
+        console.log('Modo invitado activo');
+        return;
+      }
+
+      try {
+        const res = await fetch('http://127.0.0.1:3000/api/auth/me', {
+          headers: { 'Authorization': `Bearer ${token}` }
+        });
+        if (!res.ok) throw new Error('Sesión inválida');
+      } catch (err) {
+        console.warn('Sesión expirada o inválida, pasando a modo invitado:', err);
+        localStorage.removeItem('auth_token');
+        // No redirigimos, permitimos usar como invitado
+      }
+    });
+  </script>
+</head>
+
+<body>
+  <!-- Botón de menú lateral -->
+  <button id="toggle-history" class="toggle-btn">☰</button>
+  <br>
+
+  <!-- Barra lateral izquierda -->
+  <aside id="history-panel" class="history-panel">
+    <div class="history-header">
+      <div class="button-row">
+        <br><br>
+        <button id="new-chat" class="action-btn">Nueva</button>
+      </div>
+      <h2>Conversaciones</h2>
+    </div>
+    <ul id="history-list" class="history-list"></ul>
+  </aside>
+
+  <!-- Botón de Salir (Top Right) -->
+  <button id="logout-btn" class="logout-floating-btn">Cerrar Sesión</button>
+
+  <!-- Contenedor principal del chatbot -->
+  <div class="chat-container">
+    <header class="chat-header">
+      <h1>MontIA Chatbot</h1>
+      <p class="subtitle">Tu asistente académico inteligente</p>
+      <!-- Controles de voz en el header -->
+      <div class="voice-controls">
+        <button id="speaker-btn" class="voice-header-btn" title="Lectura automática desactivada">
+          🔇
+        </button>
+      </div>
+    </header>
+
+    <div id="chat-box" class="chat-box"></div>
+
+    <div id="doc-indicator" class="doc-indicator" style="display: none;">
+      <span class="doc-icon"></span> <span id="doc-name">Documento cargado</span>
+      <button id="remove-doc" class="remove-doc-btn">&times;</button>
+    </div>
+
+    <form id="chat-form" class="chat-form">
+      <input type="file" id="pdf-upload" accept="application/pdf" style="display: none;" />
+      <button id="attach-btn" type="button" class="attach-btn" title="Adjuntar PDF">
+        📎
+      </button>
+      <input id="user-input" type="text" placeholder="Escribe tu mensaje..." autocomplete="off" />
+      <button id="mic-btn" type="button" class="mic-btn" title="Hablar (micrófono)">
+        🎙️
+      </button>
+      <button type="submit">Enviar</button>
+    </form>
+  </div>
+
+  <!-- Panel de filtros -->
+  <div id="filters-panel" class="filters-panel">
+    <h3>Filtros de búsqueda</h3>
+
+    <label>Rango de años:</label>
+    <div class="year-range">
+      <input type="number" id="yearMin" placeholder="Desde (ej. 2020)">
+      <input type="number" id="yearMax" placeholder="Hasta (ej. 2025)">
+    </div>
+
+    <label>Tipo de artículo:</label>
+    <select id="articleType">
+      <option value="">Todos</option>
+      <option value="journal">Journal</option>
+      <option value="scientific">Científico</option>
+      <option value="conference">Conferencia</option>
+    </select>
+
+    <label>Idioma:</label>
+    <select id="language">
+      <option value="">Todos</option>
+      <option value="en">Inglés</option>
+      <option value="es">Español</option>
+      <option value="pt">Portugués</option>
+    </select>
+
+    <label>Acceso abierto:</label>
+    <select id="openAccess">
+      <option value="">Todos</option>
+      <option value="true">Solo Open Access</option>
+      <option value="false">Sin restricción</option>
+    </select>
+
+    <label>Palabra clave:</label>
+    <input type="text" id="keyword" placeholder="Ej. deep learning">
+
+    <button id="applyFiltersBtn">Aplicar filtros</button>
+  </div>
+
+  <!-- ====== MODAL DEL MAPA CONCEPTUAL ====== -->
+  <div id="mindmap-modal" class="mindmap-modal">
+    <div class="mindmap-modal-content">
+      <div class="mindmap-modal-header">
+        <h2>🧠 Mapa de Conocimiento</h2>
+        <button id="mindmap-close" class="mindmap-close-btn">&times;</button>
+      </div>
+      <div id="mindmap-loading" class="mindmap-loading">
+        <div class="mindmap-spinner"></div>
+        <span>Generando mapa conceptual con IA...</span>
+      </div>
+      <div id="mindmap-graph" class="mindmap-graph"></div>
+      <div id="mindmap-legend" class="mindmap-legend" style="display:none;">
+        <div class="legend-item"><span class="legend-dot" style="background:#FFD700;"></span> Tema central</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#4A90D9;"></span> Artículo</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#2ECC71;"></span> Tema emergente</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#E74C3C;"></span> Brecha de investigación
+        </div>
+        <div class="legend-tip">Click en nodo = zoom · Doble click = ver todo · Arrastra para mover</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Scripts -->
+  <script src="voiceMode.js"></script>
+  <script src="mindMap.js"></script>
+  <script src="chatbot.js"></script>
+</body>
+
+</html>

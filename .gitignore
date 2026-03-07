@@ -1,0 +1,31 @@
+# Dependencias
+node_modules/
+
+# Variables de entorno (¡NUNCA subir al repositorio!)
+.env
+.env.local
+.env.production
+
+# Logs
+logs/
+*.log
+
+# Archivos de debug y temporales (generados en desarrollo)
+backend/output.txt
+backend/diag_output.txt
+backend/full_error.txt
+backend/server_output.txt
+backend/debug_doi.js
+backend/test_gemini.js
+backend/models.json
+backend/models_list.json
+
+# Uploads (archivos subidos por usuarios)
+backend/uploads/
+
+# Backups
+_backups/
+
+# OS
+.DS_Store
+Thumbs.db
