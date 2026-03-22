@@ -82,6 +82,19 @@ async function initDB() {
       )
     `);
 
+    // Columnas de perfil (ALTER IF NOT EXISTS es seguro y repetible)
+    const profileCols = [
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS apodo VARCHAR(50) DEFAULT NULL",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(500) DEFAULT NULL",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS area_estudio VARCHAR(100) DEFAULT NULL",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS nivel_academico VARCHAR(50) DEFAULT NULL",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS intereses TEXT DEFAULT NULL",
+      "ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_done TINYINT(1) DEFAULT 0"
+    ];
+    for (const sql of profileCols) {
+      await db.query(sql);
+    }
+
     console.log('✅ Base de datos inicializada (tablas verificadas)');
   } catch (err) {
     console.error('❌ Error al inicializar la base de datos:', err.message);

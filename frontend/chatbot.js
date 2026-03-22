@@ -179,7 +179,10 @@ function getAuthHeaders() {
   } : { 'Content-Type': 'application/json' };
 }
 
-// Cargar lista de chats
+// Global para guardar el perfil
+window.userProfile = null;
+
+// Cargar lista de chats y perfil de usuario
 async function loadConversations() {
   const token = localStorage.getItem('auth_token');
 
@@ -190,15 +193,42 @@ async function loadConversations() {
     chatBox.innerHTML = '';
     addMessage('¡Hola! Estás en modo invitado. Tus chats no se guardarán.', 'bot');
 
-    // Cambiar botón de salir a "Iniciar Sesión"
+    // Mantenemos valores por defecto en sidebar
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
       logoutBtn.textContent = 'Iniciar Sesión';
-      logoutBtn.style.backgroundColor = '#007bff'; // Azul en lugar de rojo
+      logoutBtn.style.backgroundColor = '#007bff';
     }
     return;
   }
 
+  // Cargar Perfil para la Sidebar
+  try {
+    const profRes = await fetch('http://localhost:3000/api/profile', { headers: getAuthHeaders() });
+    if (profRes.ok) {
+      const { user } = await profRes.json();
+      window.userProfile = user;
+      
+      const apodoSpan = document.getElementById('sidebar-apodo');
+      const sideImg = document.getElementById('sidebar-avatar-img');
+      const sideInit = document.getElementById('sidebar-avatar-initial');
+      
+      if (apodoSpan) apodoSpan.textContent = user.apodo || user.name || 'Usuario';
+      
+      if (user.avatar_url) {
+        if (sideImg) { sideImg.src = `http://localhost:3000${user.avatar_url}`; sideImg.style.display = 'block'; }
+        if (sideInit) sideInit.style.display = 'none';
+      } else {
+        const initial = (user.apodo || user.name || '?')[0].toUpperCase();
+        if (sideInit) { sideInit.textContent = initial; sideInit.style.display = 'block'; }
+        if (sideImg) sideImg.style.display = 'none';
+      }
+    }
+  } catch (e) {
+    console.error('Error cargando perfil:', e);
+  }
+
+  // Cargar Historial
   try {
     const res = await fetch('http://localhost:3000/api/history/conversations', {
       headers: getAuthHeaders()
@@ -206,12 +236,12 @@ async function loadConversations() {
     if (res.ok) {
       chatHistory = await res.json();
       renderHistory();
-      // Si no hay chat seleccionado y hay historial, cargar el último
       if (!currentChatId && chatHistory.length > 0) {
         loadConversation(chatHistory[0].id);
       } else if (chatHistory.length === 0) {
         chatBox.innerHTML = '';
-        addMessage('¡Hola! Soy MontIA. Crea un nuevo chat para comenzar.', 'bot');
+        const nombre = window.userProfile?.apodo || window.userProfile?.name || '';
+        addMessage(`¡Hola${nombre ? ' ' + nombre : ''}! Soy MontIA. ¿En qué puedo ayudarte hoy?`, 'bot');
       }
     }
   } catch (err) {

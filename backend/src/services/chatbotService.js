@@ -21,6 +21,7 @@ const RecallHandler = require('./handlers/recallHandler');
 const ProfileHandler = require('./handlers/profileHandler');
 const AIChatHandler = require('./handlers/aiChatHandler');
 const SearchHandler = require('./handlers/searchHandler');
+const OnboardingHandler = require('./handlers/onboardingHandler');
 
 // Factory Method: instancia las estrategias de búsqueda
 const SearchStrategyFactory = require('../factories/SearchStrategyFactory');
@@ -32,6 +33,8 @@ const searchHandlerInstance = new SearchHandler(null, searchStrategies);
 // Gateway de búsqueda: desacopla PaginationHandler del SearchHandler concreto
 const searchGateway = (query, limit, filters, offset) =>
   searchHandlerInstance.searchArticles(query, filters, limit, offset);
+
+const onboardingHandler = new OnboardingHandler();
 
 // Cadena de handlers en orden de prioridad
 const handlers = [
@@ -56,11 +59,32 @@ const handlers = [
 async function handleMessage(message, filters = {}, userId = null) {
   const session = getSession(userId);
 
+  // Onboarding: tiene prioridad sobre cualquier otro handler
+  const onboardingCtx = {
+    userId,
+    message,
+    onboardingStep: session.onboardingStep || 0
+  };
+
+  if (userId) {
+    const onboardingResult = await onboardingHandler.handle(onboardingCtx);
+    if (onboardingResult) {
+      // Actualizar el paso en la sesión
+      if (onboardingResult.onboardingCompleted || onboardingResult.onboardingStep === -1) {
+        session.onboardingStep = undefined;
+      } else {
+        session.onboardingStep = onboardingResult.onboardingStep;
+      }
+      return { text: onboardingResult.response, type: 'text' };
+    }
+  }
+
   const ctx = {
     rawMessage: message,
     normalizedMessage: normalizeText(message),
     filters,
     session,
+    userId,
     documentContext: session.documentContext,
     searchGateway,
     limit: 5

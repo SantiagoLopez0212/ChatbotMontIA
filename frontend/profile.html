@@ -1,0 +1,444 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>MontIA — Mi Perfil</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet"/>
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --bg: #0b102f; --surface-low: #141938; --surface: #181d3c;
+      --surface-mid: #232847; --surface-high: #2e3253; --surface-bright: #323757;
+      --primary: #6366f1; --secondary: #8b5cf6; --cyan: #22d3ee;
+      --on-surface: #dfe0ff; --on-muted: #c7c4d7; --outline: rgba(144,143,160,0.2);
+      --font-head: 'Space Grotesk', sans-serif; --font-body: 'Inter', sans-serif;
+      --radius-md: 0.75rem; --radius-lg: 1rem; --radius-xl: 1.5rem; --radius-full: 9999px;
+    }
+    html, body { min-height: 100vh; background: var(--bg); color: var(--on-surface); font-family: var(--font-body); }
+
+    /* TOP BAR */
+    .topbar {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 1rem 2rem;
+      background: rgba(11,16,47,0.9); backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--outline);
+      position: sticky; top: 0; z-index: 100;
+    }
+    .topbar-logo { font-family: var(--font-head); font-size: 1.3rem; font-weight: 700; color: var(--cyan); text-shadow: 0 0 16px rgba(34,211,238,0.4); text-decoration: none; }
+    .topbar-back {
+      display: flex; align-items: center; gap: 0.5rem;
+      background: var(--surface-high); border: 1px solid var(--outline);
+      color: var(--on-muted); border-radius: var(--radius-md);
+      padding: 0.5rem 1rem; font-size: 0.875rem; font-family: var(--font-body);
+      cursor: pointer; text-decoration: none; transition: all 0.2s;
+    }
+    .topbar-back:hover { background: var(--surface-bright); color: var(--on-surface); }
+
+    /* MAIN */
+    .profile-layout {
+      max-width: 680px; margin: 0 auto; padding: 2.5rem 1.5rem;
+      display: flex; flex-direction: column; gap: 1.5rem;
+    }
+
+    /* AVATAR SECTION */
+    .avatar-section {
+      display: flex; flex-direction: column; align-items: center;
+      gap: 1rem; padding: 2rem;
+      background: var(--surface-low);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--outline);
+      position: relative;
+    }
+    .avatar-wrapper {
+      position: relative; width: 100px; height: 100px;
+    }
+    #avatar-preview {
+      width: 100px; height: 100px;
+      border-radius: 50%;
+      object-fit: cover;
+      border: 3px solid var(--primary);
+      box-shadow: 0 0 20px rgba(99,102,241,0.3);
+      background: var(--surface-mid);
+    }
+    .avatar-edit-btn {
+      position: absolute; bottom: 0; right: 0;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      border: 2px solid var(--bg); border-radius: 50%;
+      width: 30px; height: 30px;
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; font-size: 0.85rem;
+      transition: transform 0.2s;
+    }
+    .avatar-edit-btn:hover { transform: scale(1.1); }
+    #avatar-input { display: none; }
+    .avatar-name {
+      font-family: var(--font-head); font-size: 1.3rem;
+      font-weight: 700; color: var(--on-surface);
+    }
+    .avatar-email { font-size: 0.875rem; color: var(--on-muted); }
+    .upload-progress {
+      font-size: 0.8rem; color: var(--cyan);
+      display: none;
+    }
+
+    /* FORM CARD */
+    .form-card {
+      background: var(--surface-low);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--outline);
+      padding: 1.5rem;
+    }
+    .form-card h2 {
+      font-family: var(--font-head); font-size: 1rem;
+      font-weight: 600; color: var(--cyan);
+      text-transform: uppercase; letter-spacing: 0.08em;
+      margin-bottom: 1.25rem;
+      padding-bottom: 0.75rem;
+      border-bottom: 1px solid var(--outline);
+    }
+    .form-grid {
+      display: grid; grid-template-columns: 1fr 1fr;
+      gap: 1rem;
+    }
+    .form-grid.full-width { grid-template-columns: 1fr; }
+
+    .field-group { display: flex; flex-direction: column; gap: 0.3rem; }
+    .field-group label {
+      font-size: 0.78rem; font-weight: 500;
+      color: var(--on-muted); text-transform: uppercase; letter-spacing: 0.06em;
+    }
+    .field-group input, .field-group select, .field-group textarea {
+      background: var(--surface-mid);
+      border: 1px solid var(--outline);
+      color: var(--on-surface);
+      border-radius: var(--radius-md);
+      padding: 0.65rem 0.9rem;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+      width: 100%;
+    }
+    .field-group input:focus, .field-group select:focus, .field-group textarea:focus {
+      border-color: rgba(34,211,238,0.5);
+      box-shadow: 0 0 0 3px rgba(34,211,238,0.08);
+    }
+    .field-group input::placeholder, .field-group textarea::placeholder { color: rgba(199,196,215,0.4); }
+    .field-group select option { background: var(--surface-mid); }
+    .field-group textarea { resize: vertical; min-height: 80px; line-height: 1.5; }
+
+    /* TAGS DE INTERESES */
+    .interests-tags {
+      display: flex; flex-wrap: wrap; gap: 0.4rem;
+      margin-top: 0.5rem;
+    }
+    .interest-tag {
+      background: rgba(99,102,241,0.15);
+      border: 1px solid rgba(99,102,241,0.3);
+      color: var(--primary);
+      border-radius: var(--radius-full);
+      padding: 0.3rem 0.75rem;
+      font-size: 0.8rem;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .interest-tag:hover, .interest-tag.selected {
+      background: rgba(99,102,241,0.3);
+      border-color: rgba(99,102,241,0.6);
+      color: white;
+    }
+
+    /* NOTIF TOAST */
+    .toast {
+      position: fixed; bottom: 2rem; right: 2rem;
+      background: var(--surface-high);
+      border: 1px solid var(--outline);
+      border-radius: var(--radius-md);
+      padding: 0.75rem 1.25rem;
+      font-size: 0.875rem;
+      color: var(--on-surface);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.4);
+      opacity: 0;
+      transform: translateY(10px);
+      transition: all 0.3s;
+      z-index: 9999;
+      display: flex; align-items: center; gap: 0.5rem;
+    }
+    .toast.show { opacity: 1; transform: translateY(0); }
+    .toast.success { border-color: rgba(46,204,113,0.4); }
+    .toast.error { border-color: rgba(255,80,80,0.4); }
+
+    /* BOTÓN GUARDAR */
+    .btn-save {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white; border: none;
+      border-radius: var(--radius-md);
+      padding: 0.8rem;
+      font-family: var(--font-body);
+      font-size: 0.95rem; font-weight: 600;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s;
+      margin-top: 0.5rem;
+    }
+    .btn-save:hover { box-shadow: 0 0 24px rgba(99,102,241,0.45); transform: translateY(-1px); }
+    .btn-save:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+
+    /* PELIGRO */
+    .danger-zone {
+      background: rgba(255,80,80,0.06);
+      border: 1px solid rgba(255,80,80,0.15);
+      border-radius: var(--radius-xl); padding: 1.25rem;
+    }
+    .danger-zone h2 { color: #ff8080; }
+    .btn-danger {
+      margin-top: 0.75rem;
+      background: rgba(255,80,80,0.12);
+      border: 1px solid rgba(255,80,80,0.25);
+      color: #ff8080;
+      border-radius: var(--radius-md);
+      padding: 0.65rem 1.25rem;
+      font-family: var(--font-body); font-weight: 600; font-size: 0.875rem;
+      cursor: pointer; transition: all 0.2s;
+    }
+    .btn-danger:hover { background: rgba(255,80,80,0.22); }
+
+    @media (max-width: 560px) {
+      .form-grid { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP BAR -->
+  <header class="topbar">
+    <a href="index.html" class="topbar-logo">MontIA</a>
+    <a href="index.html" class="topbar-back">← Volver al chat</a>
+  </header>
+
+  <!-- CONTENIDO PRINCIPAL -->
+  <main class="profile-layout">
+
+    <!-- AVATAR -->
+    <div class="avatar-section">
+      <div class="avatar-wrapper">
+        <img id="avatar-preview" src="" alt="Avatar" onerror="this.src=''" />
+        <button class="avatar-edit-btn" onclick="document.getElementById('avatar-input').click()" title="Cambiar foto">📷</button>
+        <input type="file" id="avatar-input" accept="image/jpeg,image/png,image/webp,image/gif" />
+      </div>
+      <p class="upload-progress" id="upload-progress">Subiendo imagen...</p>
+      <div class="avatar-name" id="display-name">Cargando...</div>
+      <div class="avatar-email" id="display-email"></div>
+    </div>
+
+    <!-- INFO PERSONAL -->
+    <div class="form-card">
+      <h2>✏️ Información Personal</h2>
+      <div class="form-grid">
+        <div class="field-group">
+          <label>Nombre completo</label>
+          <input type="text" id="field-name" placeholder="Tu nombre" />
+        </div>
+        <div class="field-group">
+          <label>Apodo (como MontIA te llamará)</label>
+          <input type="text" id="field-apodo" placeholder="Ej: Santi, Profe, Dr. López..." maxlength="50"/>
+        </div>
+      </div>
+    </div>
+
+    <!-- INFO ACADÉMICA -->
+    <div class="form-card">
+      <h2>🎓 Perfil Académico</h2>
+      <div class="form-grid">
+        <div class="field-group">
+          <label>Área de estudio</label>
+          <input type="text" id="field-area" placeholder="Ej: Ingeniería Biomédica, Derecho..." />
+        </div>
+        <div class="field-group">
+          <label>Nivel académico</label>
+          <select id="field-nivel">
+            <option value="">Selecciona...</option>
+            <option value="Pregrado">Pregrado</option>
+            <option value="Maestría">Maestría</option>
+            <option value="Doctorado">Doctorado</option>
+            <option value="Postdoctorado">Postdoctorado</option>
+            <option value="Investigador">Investigador</option>
+            <option value="Docente">Docente</option>
+          </select>
+        </div>
+      </div>
+      <div class="form-grid full-width" style="margin-top:1rem;">
+        <div class="field-group">
+          <label>Temas de interés (separados por coma)</label>
+          <input type="text" id="field-intereses" placeholder="Ej: machine learning, salud digital, bioética..." />
+          <div class="interests-tags" id="interests-suggestions">
+            <span class="interest-tag" onclick="addInterest(this)">🤖 IA</span>
+            <span class="interest-tag" onclick="addInterest(this)">🧬 Bioinformática</span>
+            <span class="interest-tag" onclick="addInterest(this)">📊 Data Science</span>
+            <span class="interest-tag" onclick="addInterest(this)">⚕️ Salud Digital</span>
+            <span class="interest-tag" onclick="addInterest(this)">🔒 Ciberseguridad</span>
+            <span class="interest-tag" onclick="addInterest(this)">🌱 Sostenibilidad</span>
+            <span class="interest-tag" onclick="addInterest(this)">⚖️ Ética en IA</span>
+            <span class="interest-tag" onclick="addInterest(this)">📡 IoT</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- BOTÓN GUARDAR -->
+    <button class="btn-save" id="save-btn" onclick="saveProfile()">💾 Guardar cambios</button>
+
+    <!-- ZONA PELIGRO -->
+    <div class="danger-zone form-card">
+      <h2>⚠️ Zona de peligro</h2>
+      <p style="font-size:0.85rem;color:var(--on-muted);margin-top:0.5rem;">Cerrar sesión eliminará tu acceso hasta que vuelvas a inicar sesión.</p>
+      <button class="btn-danger" onclick="logout()">Cerrar sesión</button>
+    </div>
+  </main>
+
+  <!-- TOAST -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const API = 'http://127.0.0.1:3000/api';
+    const token = localStorage.getItem('auth_token');
+    if (!token) window.location.href = 'auth.html';
+
+    // ── CARGAR PERFIL ──
+    async function loadProfile() {
+      try {
+        const res = await fetch(`${API}/profile`, { headers: { 'Authorization': `Bearer ${token}` } });
+        if (!res.ok) throw new Error('No autorizado');
+        const { user } = await res.json();
+        renderProfile(user);
+      } catch {
+        window.location.href = 'auth.html';
+      }
+    }
+
+    function renderProfile(user) {
+      document.getElementById('display-name').textContent = user.apodo || user.name || 'Sin nombre';
+      document.getElementById('display-email').textContent = user.email || '';
+      document.getElementById('field-name').value = user.name || '';
+      document.getElementById('field-apodo').value = user.apodo || '';
+      document.getElementById('field-area').value = user.area_estudio || '';
+      document.getElementById('field-nivel').value = user.nivel_academico || '';
+      document.getElementById('field-intereses').value = user.intereses || '';
+
+      const avatarEl = document.getElementById('avatar-preview');
+      if (user.avatar_url) {
+        avatarEl.src = `${API.replace('/api', '')}${user.avatar_url}`;
+      } else {
+        // Genera avatar con inicial
+        const initial = (user.apodo || user.name || '?')[0].toUpperCase();
+        avatarEl.style.display = 'none';
+        const placeholder = document.createElement('div');
+        placeholder.id = 'avatar-placeholder';
+        placeholder.style.cssText = `
+          width:100px;height:100px;border-radius:50%;
+          background:linear-gradient(135deg,#6366f1,#8b5cf6);
+          display:flex;align-items:center;justify-content:center;
+          font-size:2.5rem;font-weight:700;color:white;
+          border:3px solid #6366f1;font-family:'Space Grotesk',sans-serif;
+          box-shadow:0 0 20px rgba(99,102,241,0.3);
+        `;
+        placeholder.textContent = initial;
+        avatarEl.parentNode.insertBefore(placeholder, avatarEl);
+      }
+    }
+
+    // ── GUARDAR PERFIL ──
+    async function saveProfile() {
+      const btn = document.getElementById('save-btn');
+      btn.disabled = true; btn.textContent = 'Guardando...';
+      try {
+        const body = {
+          apodo: document.getElementById('field-apodo').value.trim() || null,
+          area_estudio: document.getElementById('field-area').value.trim() || null,
+          nivel_academico: document.getElementById('field-nivel').value || null,
+          intereses: document.getElementById('field-intereses').value.trim() || null,
+        };
+        const res = await fetch(`${API}/profile`, {
+          method: 'PUT',
+          headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+          body: JSON.stringify(body)
+        });
+        if (!res.ok) throw new Error('Error al guardar');
+        const { user } = await res.json();
+        document.getElementById('display-name').textContent = user.apodo || user.name;
+        showToast('✅ Perfil guardado correctamente', 'success');
+      } catch (e) {
+        showToast('❌ ' + e.message, 'error');
+      } finally {
+        btn.disabled = false; btn.textContent = '💾 Guardar cambios';
+      }
+    }
+
+    // ── SUBIR AVATAR ──
+    document.getElementById('avatar-input').addEventListener('change', async (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const progress = document.getElementById('upload-progress');
+      progress.style.display = 'block';
+      try {
+        const formData = new FormData();
+        formData.append('avatar', file);
+        const res = await fetch(`${API}/profile/avatar`, {
+          method: 'POST',
+          headers: { 'Authorization': `Bearer ${token}` },
+          body: formData
+        });
+        if (!res.ok) throw new Error('Error al subir');
+        const data = await res.json();
+        // Preview inmediato
+        const reader = new FileReader();
+        reader.onload = (ev) => {
+          const placeholder = document.getElementById('avatar-placeholder');
+          if (placeholder) placeholder.remove();
+          const img = document.getElementById('avatar-preview');
+          img.style.display = '';
+          img.src = ev.target.result;
+        };
+        reader.readAsDataURL(file);
+        showToast('📸 Foto de perfil actualizada', 'success');
+      } catch (e) {
+        showToast('❌ ' + e.message, 'error');
+      } finally {
+        progress.style.display = 'none';
+      }
+    });
+
+    // ── CERRAR SESIÓN ──
+    function logout() {
+      localStorage.removeItem('auth_token');
+      window.location.href = 'auth.html';
+    }
+
+    // ── TAGS DE INTERÉS ──
+    function addInterest(el) {
+      el.classList.toggle('selected');
+      const campo = document.getElementById('field-intereses');
+      const texto = el.textContent.replace(/^[\u{1F000}-\u{FFFF}]/u, '').trim();
+      let val = campo.value.split(',').map(s => s.trim()).filter(Boolean);
+      if (el.classList.contains('selected')) {
+        if (!val.includes(texto)) val.push(texto);
+      } else {
+        val = val.filter(v => v !== texto);
+      }
+      campo.value = val.join(', ');
+    }
+
+    // ── TOAST ──
+    function showToast(msg, type = '') {
+      const t = document.getElementById('toast');
+      t.textContent = msg;
+      t.className = `toast ${type} show`;
+      setTimeout(() => t.classList.remove('show'), 3500);
+    }
+
+    loadProfile();
+  </script>
+</body>
+</html>
