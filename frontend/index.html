@@ -1,100 +1,91 @@
-﻿<!DOCTYPE html>
+<!DOCTYPE html>
 <html lang="es">
 
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>MontIA Chatbot</title>
+  <meta name="description"
+    content="MontIA — Tu asistente académico inteligente para búsqueda de artículos, análisis de PDF y generación de mapas conceptuales." />
+  <title>MontIA — Asistente Académico</title>
   <link rel="stylesheet" href="style.css" />
-  <!-- vis.js para el Mapa Conceptual Interactivo -->
   <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
   <script>
-    // Verificación de sesión (opcional)
     document.addEventListener('DOMContentLoaded', async () => {
       const token = localStorage.getItem('auth_token');
-      if (!token) {
-        console.log('Modo invitado activo');
-        return;
-      }
-
+      if (!token) { console.log('Modo invitado activo'); return; }
       try {
         const res = await fetch('http://127.0.0.1:3000/api/auth/me', {
           headers: { 'Authorization': `Bearer ${token}` }
         });
         if (!res.ok) throw new Error('Sesión inválida');
       } catch (err) {
-        console.warn('Sesión expirada o inválida, pasando a modo invitado:', err);
+        console.warn('Sesión expirada, modo invitado:', err);
         localStorage.removeItem('auth_token');
-        // No redirigimos, permitimos usar como invitado
       }
     });
   </script>
 </head>
 
 <body>
-  <!-- Botón de menú lateral -->
-  <button id="toggle-history" class="toggle-btn">☰</button>
-  <br>
+  <!-- Menú toggle -->
+  <button id="toggle-history" class="toggle-btn" title="Historial de conversaciones">☰</button>
 
-  <!-- Barra lateral izquierda -->
+  <!-- Sidebar izquierda -->
   <aside id="history-panel" class="history-panel">
     <div class="history-header">
-      <div class="button-row">
-        <br><br>
-        <button id="new-chat" class="action-btn">Nueva</button>
-      </div>
       <h2>Conversaciones</h2>
+      <div class="button-row">
+        <button id="new-chat" class="action-btn">+ Nueva conversación</button>
+      </div>
     </div>
     <ul id="history-list" class="history-list"></ul>
   </aside>
 
-  <!-- Botón de Salir (Top Right) -->
-  <button id="logout-btn" class="logout-floating-btn">Cerrar Sesión</button>
+  <!-- Botón cerrar sesión -->
+  <button id="logout-btn" class="logout-floating-btn">Cerrar sesión</button>
 
-  <!-- Contenedor principal del chatbot -->
+  <!-- Botón filtros flotante -->
+  <button id="filter-toggle-btn" class="toggle-btn" style="left:auto;right:14px;top:60px;font-size:1rem;"
+    title="Filtros de búsqueda">⚙️ Filtros</button>
+
+  <!-- Área principal del chat -->
   <div class="chat-container">
     <header class="chat-header">
-      <h1>MontIA Chatbot</h1>
-      <p class="subtitle">Tu asistente académico inteligente</p>
-      <!-- Controles de voz en el header -->
+      <h1>MontIA</h1>
+      <p class="subtitle">Asistente Académico Inteligente</p>
       <div class="voice-controls">
-        <button id="speaker-btn" class="voice-header-btn" title="Lectura automática desactivada">
-          🔇
-        </button>
+        <button id="speaker-btn" class="voice-header-btn" title="Lectura en voz alta">🔇</button>
       </div>
     </header>
 
     <div id="chat-box" class="chat-box"></div>
 
     <div id="doc-indicator" class="doc-indicator" style="display: none;">
-      <span class="doc-icon"></span> <span id="doc-name">Documento cargado</span>
-      <button id="remove-doc" class="remove-doc-btn">&times;</button>
+      <span class="doc-icon">📄</span>
+      <span id="doc-name">Documento cargado</span>
+      <button id="remove-doc" class="remove-doc-btn">×</button>
     </div>
 
     <form id="chat-form" class="chat-form">
       <input type="file" id="pdf-upload" accept="application/pdf" style="display: none;" />
-      <button id="attach-btn" type="button" class="attach-btn" title="Adjuntar PDF">
-        📎
-      </button>
+      <button id="attach-btn" type="button" class="attach-btn" title="Adjuntar PDF">📎</button>
       <input id="user-input" type="text" placeholder="Escribe tu mensaje..." autocomplete="off" />
-      <button id="mic-btn" type="button" class="mic-btn" title="Hablar (micrófono)">
-        🎙️
-      </button>
+      <button id="mic-btn" type="button" class="mic-btn" title="Hablar por micrófono">🎙️</button>
       <button type="submit">Enviar</button>
     </form>
   </div>
 
   <!-- Panel de filtros -->
   <div id="filters-panel" class="filters-panel">
-    <h3>Filtros de búsqueda</h3>
+    <h3>🔍 Filtros</h3>
 
-    <label>Rango de años:</label>
+    <label>Rango de años</label>
     <div class="year-range">
-      <input type="number" id="yearMin" placeholder="Desde (ej. 2020)">
-      <input type="number" id="yearMax" placeholder="Hasta (ej. 2025)">
+      <input type="number" id="yearMin" placeholder="Desde">
+      <input type="number" id="yearMax" placeholder="Hasta">
     </div>
 
-    <label>Tipo de artículo:</label>
+    <label>Tipo de artículo</label>
     <select id="articleType">
       <option value="">Todos</option>
       <option value="journal">Journal</option>
@@ -102,7 +93,7 @@
       <option value="conference">Conferencia</option>
     </select>
 
-    <label>Idioma:</label>
+    <label>Idioma</label>
     <select id="language">
       <option value="">Todos</option>
       <option value="en">Inglés</option>
@@ -110,25 +101,25 @@
       <option value="pt">Portugués</option>
     </select>
 
-    <label>Acceso abierto:</label>
+    <label>Acceso abierto</label>
     <select id="openAccess">
       <option value="">Todos</option>
       <option value="true">Solo Open Access</option>
       <option value="false">Sin restricción</option>
     </select>
 
-    <label>Palabra clave:</label>
+    <label>Palabra clave</label>
     <input type="text" id="keyword" placeholder="Ej. deep learning">
 
     <button id="applyFiltersBtn">Aplicar filtros</button>
   </div>
 
-  <!-- ====== MODAL DEL MAPA CONCEPTUAL ====== -->
+  <!-- Modal mapa conceptual -->
   <div id="mindmap-modal" class="mindmap-modal">
     <div class="mindmap-modal-content">
       <div class="mindmap-modal-header">
         <h2>🧠 Mapa de Conocimiento</h2>
-        <button id="mindmap-close" class="mindmap-close-btn">&times;</button>
+        <button id="mindmap-close" class="mindmap-close-btn">×</button>
       </div>
       <div id="mindmap-loading" class="mindmap-loading">
         <div class="mindmap-spinner"></div>
@@ -146,7 +137,20 @@
     </div>
   </div>
 
-  <!-- Scripts -->
+  <script>
+    // Toggle filtros
+    const filterBtn = document.getElementById('filter-toggle-btn');
+    const filtersPanel = document.getElementById('filters-panel');
+    if (filterBtn && filtersPanel) {
+      filterBtn.addEventListener('click', () => filtersPanel.classList.toggle('active'));
+      document.addEventListener('click', (e) => {
+        if (!filtersPanel.contains(e.target) && e.target !== filterBtn) {
+          filtersPanel.classList.remove('active');
+        }
+      });
+    }
+  </script>
+
   <script src="voiceMode.js"></script>
   <script src="mindMap.js"></script>
   <script src="chatbot.js"></script>

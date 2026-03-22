@@ -4,501 +4,608 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Bienvenido al Chatbot MontIA, Tu Asistente IA de ayudas bibliográficas</title>
+  <meta name="description" content="MontIA — Ingresa o crea tu cuenta para acceder a tu asistente académico inteligente." />
+  <title>MontIA — Acceso</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
   <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
     :root {
-      --primary: #0b5ed7;
-      --bg1: #a1c4fd;
-      --bg2: #c2e9fb;
+      --bg:         #0b102f;
+      --surface-low:#141938;
+      --surface:    #181d3c;
+      --surface-mid:#232847;
+      --surface-high:#2e3253;
+      --primary:    #6366f1;
+      --secondary:  #8b5cf6;
+      --cyan:       #22d3ee;
+      --on-surface: #dfe0ff;
+      --on-muted:   #c7c4d7;
+      --outline:    rgba(144,143,160,0.2);
+      --error:      #ff8080;
+      --font-head:  'Space Grotesk', sans-serif;
+      --font-body:  'Inter', sans-serif;
+      --radius-sm:  0.5rem;
+      --radius-md:  0.75rem;
+      --radius-lg:  1rem;
+      --radius-xl:  1.5rem;
+    }
+    html, body {
+      height: 100%; min-height: 100vh;
+      background: var(--bg);
+      color: var(--on-surface);
+      font-family: var(--font-body);
+      overflow: hidden;
     }
 
-    * {
-      box-sizing: border-box;
-    }
-
-    body {
-      margin: 0;
-      font-family: 'Roboto', Arial, sans-serif;
-      min-height: 100vh;
+    /* ── LAYOUT SPLIT ── */
+    .auth-layout {
       display: flex;
-      align-items: center;
-      justify-content: center;
-      background: linear-gradient(135deg, var(--bg1) 0%, var(--bg2) 100%);
+      height: 100vh;
     }
 
-    .container {
-      width: 100%;
-      max-width: 960px;
-      padding: 20px;
-    }
-
-    .hero {
-      text-align: center;
-      color: #0a2558;
-      margin-bottom: 18px;
-    }
-
-    .hero h1 {
-      font-size: 2.2rem;
-      margin: 0 0 8px;
-      font-weight: 800;
-      color: #0b5ed7;
-      text-shadow: 0 2px 8px rgba(0, 0, 0, 0.10);
-    }
-
-    .hero p {
-      margin: 0;
-      color: #234;
-    }
-
-    .card {
-      display: grid;
-      grid-template-columns: 1.1fr 1fr;
-      gap: 18px;
-      background: rgba(255, 255, 255, 0.98);
-      border-radius: 18px;
-      box-shadow: 0 16px 36px rgba(0, 0, 0, 0.15), 0 2px 10px rgba(0, 0, 0, 0.06);
-      padding: 18px;
-    }
-
-    .left {
-      padding: 12px;
-    }
-
-    .right {
-      padding: 12px;
-      border-left: 1px solid #e8eef9;
-    }
-
-    .tabs {
-      display: flex;
-      gap: 10px;
-      margin-bottom: 12px;
-    }
-
-    .tab {
+    /* ── LADO IZQUIERDO ── */
+    .auth-left {
       flex: 1;
-      padding: 10px;
-      border: 1px solid #cfe2ff;
-      background: #e9f2ff;
-      color: #0b5ed7;
-      border-radius: 10px;
-      cursor: pointer;
+      background: linear-gradient(135deg, #0a0f2e 0%, #0d1a50 40%, #1a1060 100%);
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      padding: 3rem;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Orbes decorativos */
+    .auth-left::before {
+      content: '';
+      position: absolute;
+      width: 400px; height: 400px;
+      background: radial-gradient(circle, rgba(99,102,241,0.2) 0%, transparent 70%);
+      top: -100px; left: -100px;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .auth-left::after {
+      content: '';
+      position: absolute;
+      width: 300px; height: 300px;
+      background: radial-gradient(circle, rgba(34,211,238,0.15) 0%, transparent 70%);
+      bottom: -50px; right: 0;
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .orb-mid {
+      position: absolute;
+      width: 200px; height: 200px;
+      background: radial-gradient(circle, rgba(139,92,246,0.18) 0%, transparent 70%);
+      top: 50%; left: 60%;
+      transform: translate(-50%, -50%);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+
+    .brand-content {
+      position: relative;
+      z-index: 1;
       text-align: center;
-      font-weight: 600;
-      transition: 0.3s;
+      max-width: 400px;
     }
 
-    .tab.active {
-      background: #0b5ed7;
-      color: #fff;
-    }
-
-    .form {
-      display: none;
-    }
-
-    .form.active {
-      display: block;
-    }
-
-    .field {
-      margin-bottom: 10px;
-    }
-
-    .field label {
-      display: block;
-      margin-bottom: 6px;
-      color: #123;
-      font-weight: 600;
-    }
-
-    .field input {
-      width: 100%;
-      padding: 12px;
-      border: 1.5px solid #bdbdbd;
-      border-radius: 10px;
-      background: #f8fafc;
-      font-size: 1rem;
-    }
-
-    .btn {
-      display: inline-block;
-      width: 100%;
-      padding: 12px;
-      border: none;
-      border-radius: 10px;
-      cursor: pointer;
+    .brand-logo {
+      font-family: var(--font-head);
+      font-size: 3.5rem;
       font-weight: 700;
+      color: var(--cyan);
+      text-shadow: 0 0 40px rgba(34,211,238,0.5), 0 0 80px rgba(34,211,238,0.2);
+      letter-spacing: -0.02em;
+      line-height: 1;
+      margin-bottom: 0.5rem;
+    }
+
+    .brand-tagline {
+      font-family: var(--font-head);
       font-size: 1rem;
-      transition: 0.3s;
+      color: var(--on-muted);
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      margin-bottom: 2.5rem;
     }
 
-    .btn-primary {
-      background: #0b5ed7;
-      color: #fff;
+    .feature-pills {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      align-items: center;
     }
 
-    .btn-primary:hover {
-      background: #094bb0;
+    .feature-pill {
+      display: flex;
+      align-items: center;
+      gap: 0.6rem;
+      background: rgba(255,255,255,0.06);
+      border: 1px solid rgba(255,255,255,0.08);
+      border-radius: var(--radius-xl);
+      padding: 0.6rem 1.25rem;
+      font-size: 0.875rem;
+      color: var(--on-surface);
+      backdrop-filter: blur(8px);
+      transition: background 0.2s, border-color 0.2s;
     }
+    .feature-pill:hover {
+      background: rgba(99,102,241,0.12);
+      border-color: rgba(99,102,241,0.25);
+    }
+    .feature-pill span { font-size: 1.1rem; }
 
-    .btn-google {
-      background: #fff;
-      color: #333;
-      border: 1px solid #e5e9f2;
+    /* ── LADO DERECHO ── */
+    .auth-right {
+      width: 460px;
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 8px;
+      padding: 2rem;
+      background: rgba(11,16,47,0.95);
+      border-left: 1px solid var(--outline);
     }
 
-    .muted {
-      color: #666;
-      font-size: 0.92rem;
-      text-align: center;
+    .auth-card {
+      width: 100%;
+      max-width: 400px;
     }
 
-    .alert {
-      background: #fff3cd;
-      border: 1px solid #ffec9e;
-      color: #6d5200;
-      padding: 8px 10px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-      display: none;
+    /* TABS */
+    .auth-tabs {
+      display: flex;
+      background: var(--surface-mid);
+      border-radius: var(--radius-md);
+      padding: 4px;
+      margin-bottom: 1.75rem;
     }
-
-    .success {
-      background: #d1e7dd;
-      border: 1px solid #badbcc;
-      color: #0f5132;
-      display: none;
-      padding: 8px 10px;
-      border-radius: 8px;
-      margin-bottom: 10px;
-    }
-
-    .link {
-      color: var(--primary);
+    .tab-btn {
+      flex: 1;
+      background: transparent;
+      border: none;
+      color: var(--on-muted);
+      font-family: var(--font-body);
+      font-size: 0.875rem;
+      font-weight: 600;
+      padding: 0.6rem;
+      border-radius: calc(var(--radius-md) - 2px);
       cursor: pointer;
+      transition: all 0.2s;
+    }
+    .tab-btn.active {
+      background: var(--surface-high);
+      color: var(--on-surface);
+      box-shadow: 0 0 12px rgba(99,102,241,0.15);
     }
 
-    @media (max-width: 840px) {
-      .card {
-        grid-template-columns: 1fr;
-      }
+    /* FORM PANEL */
+    .auth-panel { display: none; }
+    .auth-panel.active { display: block; }
 
-      .right {
-        border-left: none;
-        border-top: 1px solid #e8eef9;
-      }
+    .auth-title {
+      font-family: var(--font-head);
+      font-size: 1.5rem;
+      font-weight: 700;
+      color: var(--on-surface);
+      margin-bottom: 0.25rem;
+    }
+    .auth-subtitle {
+      font-size: 0.875rem;
+      color: var(--on-muted);
+      margin-bottom: 1.5rem;
+    }
+
+    /* Inputs */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-bottom: 1.25rem;
+    }
+    .input-field {
+      position: relative;
+    }
+    .input-field label {
+      display: block;
+      font-size: 0.78rem;
+      font-weight: 500;
+      color: var(--on-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.35rem;
+    }
+    .input-field input {
+      width: 100%;
+      background: var(--surface-mid);
+      border: 1px solid var(--outline);
+      color: var(--on-surface);
+      border-radius: var(--radius-md);
+      padding: 0.7rem 1rem;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      outline: none;
+      transition: border-color 0.2s, box-shadow 0.2s;
+    }
+    .input-field input:focus {
+      border-color: rgba(34,211,238,0.5);
+      box-shadow: 0 0 0 3px rgba(34,211,238,0.08);
+    }
+    .input-field input::placeholder { color: rgba(199,196,215,0.4); }
+
+    .input-field .eye-btn {
+      position: absolute;
+      right: 0.75rem; top: 50%;
+      transform: translateY(-50%);
+      background: none; border: none;
+      color: var(--on-muted); cursor: pointer;
+      font-size: 1rem; padding: 0;
+      margin-top: 0.9rem;
+    }
+    .input-field .eye-btn:hover { color: var(--on-surface); }
+
+    /* Forgot password */
+    .forgot-link {
+      display: block;
+      text-align: right;
+      font-size: 0.8rem;
+      color: var(--cyan);
+      text-decoration: none;
+      margin-top: -0.5rem;
+      margin-bottom: 1.25rem;
+      transition: color 0.2s;
+    }
+    .forgot-link:hover { color: var(--on-surface); }
+
+    /* Error msg */
+    .error-msg {
+      font-size: 0.825rem;
+      color: var(--error);
+      min-height: 1.2em;
+      margin-bottom: 0.75rem;
+    }
+
+    /* Primary button */
+    .btn-primary {
+      width: 100%;
+      background: linear-gradient(135deg, var(--primary), var(--secondary));
+      color: white;
+      border: none;
+      border-radius: var(--radius-md);
+      padding: 0.8rem;
+      font-family: var(--font-body);
+      font-size: 0.95rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: box-shadow 0.2s, transform 0.2s;
+      margin-bottom: 1rem;
+    }
+    .btn-primary:hover {
+      box-shadow: 0 0 24px rgba(99,102,241,0.45);
+      transform: translateY(-1px);
+    }
+    .btn-primary:active { transform: translateY(0); }
+
+    /* Divider */
+    .divider {
+      display: flex; align-items: center; gap: 0.75rem;
+      margin: 0.5rem 0 1rem;
+    }
+    .divider::before, .divider::after {
+      content: ''; flex: 1;
+      height: 1px;
+      background: var(--outline);
+    }
+    .divider span { font-size: 0.8rem; color: var(--on-muted); white-space: nowrap; }
+
+    /* Guest button */
+    .btn-ghost {
+      width: 100%;
+      background: transparent;
+      border: 1px solid var(--outline);
+      color: var(--on-muted);
+      border-radius: var(--radius-md);
+      padding: 0.75rem;
+      font-family: var(--font-body);
+      font-size: 0.9rem;
+      font-weight: 500;
+      cursor: pointer;
+      transition: all 0.2s;
+      margin-bottom: 1.25rem;
+    }
+    .btn-ghost:hover {
+      background: var(--surface-mid);
+      border-color: rgba(199,196,215,0.35);
+      color: var(--on-surface);
+    }
+
+    /* Footer link */
+    .auth-footer {
+      text-align: center;
+      font-size: 0.85rem;
+      color: var(--on-muted);
+    }
+    .auth-footer a {
+      color: var(--cyan);
+      text-decoration: none;
+      cursor: pointer;
+      font-weight: 500;
+    }
+    .auth-footer a:hover { text-decoration: underline; }
+
+    /* Recovery panel */
+    #recovery-panel { display: none; }
+    #recovery-panel.active { display: block; }
+
+    /* Loading spinner inline */
+    .btn-primary.loading {
+      opacity: 0.7;
+      cursor: not-allowed;
+      pointer-events: none;
     }
   </style>
-
-  <script>
-    // Comprobación de sesión existente (token o cookie)
-    document.addEventListener('DOMContentLoaded', async () => {
-      try {
-        const token = localStorage.getItem('auth_token') || '';
-        if (!token) return; // si no hay token, no verifica nada
-
-        const res = await fetch('http://localhost:3000/api/auth/me', {
-          credentials: 'include',
-          headers: token ? { 'Authorization': `Bearer ${token}` } : {}
-        });
-
-        if (res.ok) {
-          const data = await res.json();
-          if (data.user) {
-            // si hay sesión válida, redirigir al chat
-            window.location.href = 'index.html';
-            return;
-          }
-        }
-      } catch (err) {
-        console.warn('No se pudo verificar la sesión:', err);
-      }
-    });
-  </script>
 </head>
 
 <body>
-  <div class="container">
-    <div class="hero">
-      <h1>Bienvenido al Chatbot MontIA</h1>
-      <p>Accede con tu cuenta para comenzar a chatear</p>
+  <div class="auth-layout">
+    <!-- LADO IZQUIERDO: Branding -->
+    <div class="auth-left">
+      <div class="orb-mid"></div>
+      <div class="brand-content">
+        <div class="brand-logo">MontIA</div>
+        <p class="brand-tagline">Descubre. Aprende. Investiga.</p>
+        <div class="feature-pills">
+          <div class="feature-pill"><span>🔍</span> Búsqueda Académica Avanzada</div>
+          <div class="feature-pill"><span>🧠</span> IA Conversacional y Contextual</div>
+          <div class="feature-pill"><span>📄</span> Análisis de Documentos PDF</div>
+          <div class="feature-pill"><span>🗺️</span> Mapas de Conocimiento</div>
+        </div>
+      </div>
     </div>
-    <div class="card">
-      <!-- Lado izquierdo -->
-      <div class="left">
-        <div class="tabs">
-          <button id="tab-login" class="tab active">Iniciar sesión</button>
-          <button id="tab-register" class="tab">Registrarse</button>
+
+    <!-- LADO DERECHO: Formulario -->
+    <div class="auth-right">
+      <div class="auth-card">
+
+        <!-- --- LOGIN PANEL --- -->
+        <div id="login-section" class="auth-panel active">
+          <div class="auth-tabs">
+            <button class="tab-btn active" onclick="switchTab('login')">Iniciar Sesión</button>
+            <button class="tab-btn" onclick="switchTab('register')">Registrarse</button>
+          </div>
+
+          <h2 class="auth-title">Bienvenido de vuelta</h2>
+          <p class="auth-subtitle">Ingresa a tu cuenta para continuar</p>
+
+          <div class="input-group">
+            <div class="input-field">
+              <label>Correo electrónico</label>
+              <input type="email" id="login-email" placeholder="tu@correo.com" autocomplete="email" />
+            </div>
+            <div class="input-field">
+              <label>Contraseña</label>
+              <input type="password" id="login-password" placeholder="••••••••" autocomplete="current-password" />
+              <button class="eye-btn" type="button" onclick="togglePass('login-password', this)">👁️</button>
+            </div>
+          </div>
+
+          <a class="forgot-link" onclick="showRecovery()">¿Olvidaste tu contraseña?</a>
+
+          <p class="error-msg" id="login-error"></p>
+          <button class="btn-primary" id="login-btn" onclick="handleLogin()">Iniciar Sesión</button>
+
+          <div class="divider"><span>o continúa con</span></div>
+          <button class="btn-ghost" onclick="continueAsGuest()">Continuar sin cuenta</button>
+
+          <p class="auth-footer">¿No tienes cuenta? <a onclick="switchTab('register')">Regístrate gratis</a></p>
         </div>
 
-        <div id="msg-error" class="alert"></div>
-        <div id="msg-ok" class="success"></div>
-
-        <!-- Formulario de inicio de sesión -->
-        <form id="form-login" class="form active" autocomplete="on">
-          <div class="field">
-            <label>Email</label>
-            <input type="email" id="login-email" required />
-          </div>
-          <div class="field">
-            <label>Contraseña</label>
-            <input type="password" id="login-password" required />
-          </div>
-          <div style="text-align: right; margin-bottom: 15px;">
-            <span id="link-forgot" class="link" style="font-size: 0.9rem;">¿Olvidaste tu contraseña?</span>
+        <!-- --- REGISTER PANEL --- -->
+        <div id="register-section" class="auth-panel">
+          <div class="auth-tabs">
+            <button class="tab-btn" onclick="switchTab('login')">Iniciar Sesión</button>
+            <button class="tab-btn active" onclick="switchTab('register')">Registrarse</button>
           </div>
 
-          <button type="submit" class="btn btn-primary">Entrar</button>
-        </form>
+          <h2 class="auth-title">Crea tu cuenta</h2>
+          <p class="auth-subtitle">Únete a MontIA de forma gratuita</p>
 
-        <!-- Formulario de registro -->
-        <form id="form-register" class="form" autocomplete="on">
-          <div class="field">
-            <label>Nombre</label>
-            <input type="text" id="reg-name" minlength="2" required />
-          </div>
-          <div class="field">
-            <label>Email</label>
-            <input type="email" id="reg-email" required />
-          </div>
-          <div class="field">
-            <label>Contraseña (mín. 6 caracteres)</label>
-            <input type="password" id="reg-password" minlength="6" required />
-          </div>
-          <button type="submit" class="btn btn-primary">Crear cuenta</button>
-        </form>
-
-        <!-- Formulario de recuperación -->
-        <form id="form-recovery" class="form" autocomplete="off">
-          <h3 style="margin-top:0; color:#0b5ed7;">Recuperar Contraseña</h3>
-
-          <!-- Paso 1: Solicitar Código -->
-          <div id="step-request">
-            <div class="field">
-              <label>Ingresa tu Email</label>
-              <input type="email" id="rec-email" required />
+          <div class="input-group">
+            <div class="input-field">
+              <label>Nombre completo</label>
+              <input type="text" id="reg-name" placeholder="Tu nombre" autocomplete="name" />
             </div>
-            <button type="button" id="btn-send-code" class="btn btn-primary">Enviar Código</button>
+            <div class="input-field">
+              <label>Correo electrónico</label>
+              <input type="email" id="reg-email" placeholder="tu@correo.com" autocomplete="email" />
+            </div>
+            <div class="input-field">
+              <label>Contraseña</label>
+              <input type="password" id="reg-password" placeholder="Mínimo 8 caracteres" autocomplete="new-password" />
+              <button class="eye-btn" type="button" onclick="togglePass('reg-password', this)">👁️</button>
+            </div>
           </div>
 
-          <!-- Paso 2: Verificar y Cambiar -->
-          <div id="step-verify" style="display:none;">
-            <div class="field">
-              <label>Código de 6 dígitos</label>
-              <input type="text" id="rec-code" maxlength="6" required />
+          <p class="error-msg" id="register-error"></p>
+          <button class="btn-primary" id="register-btn" onclick="handleRegister()">Crear cuenta</button>
+
+          <div class="divider"><span>o continúa con</span></div>
+          <button class="btn-ghost" onclick="continueAsGuest()">Continuar sin cuenta</button>
+
+          <p class="auth-footer">¿Ya tienes cuenta? <a onclick="switchTab('login')">Inicia sesión</a></p>
+        </div>
+
+        <!-- --- RECOVERY PANEL --- -->
+        <div id="recovery-panel">
+          <h2 class="auth-title">Recuperar contraseña</h2>
+          <p class="auth-subtitle">Te enviaremos un código de verificación a tu correo</p>
+
+          <div id="recovery-step1">
+            <div class="input-group">
+              <div class="input-field">
+                <label>Correo electrónico</label>
+                <input type="email" id="recovery-email" placeholder="tu@correo.com" />
+              </div>
             </div>
-            <div class="field">
-              <label>Nueva Contraseña</label>
-              <input type="password" id="rec-new-pass" minlength="6" required />
-            </div>
-            <button type="submit" class="btn btn-primary">Cambiar Contraseña</button>
+            <p class="error-msg" id="recovery-error"></p>
+            <button class="btn-primary" onclick="sendRecoveryCode()">Enviar código</button>
           </div>
 
-          <p class="muted" style="margin-top:10px;">
-            <span id="link-back-login" class="link">Volver al inicio de sesión</span>
+          <div id="recovery-step2" style="display:none;">
+            <div class="input-group">
+              <div class="input-field">
+                <label>Código de verificación (6 dígitos)</label>
+                <input type="text" id="recovery-code" placeholder="123456" maxlength="6" />
+              </div>
+              <div class="input-field">
+                <label>Nueva contraseña</label>
+                <input type="password" id="new-password" placeholder="••••••••" />
+                <button class="eye-btn" type="button" onclick="togglePass('new-password', this)">👁️</button>
+              </div>
+            </div>
+            <p class="error-msg" id="reset-error"></p>
+            <button class="btn-primary" onclick="resetPassword()">Cambiar contraseña</button>
+          </div>
+
+          <p class="auth-footer" style="margin-top:1rem;">
+            <a onclick="showLogin()">← Volver al inicio de sesión</a>
           </p>
-        </form>
-      </div>
+        </div>
 
-      <!-- Lado derecho -->
-      <div class="right">
-        <button id="btn-google" class="btn btn-google" title="Próximamente">
-          <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 48 48">
-            <path fill="#FFC107"
-              d="M43.611,20.083H42V20H24v8h11.303C33.582,32.658,29.197,36,24,36c-6.627,0-12-5.373-12-12s5.373-12,12-12 c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20 c11.045,0,20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z" />
-          </svg>
-          <span>Registrarse con Google</span>
-        </button>
-
-        <p class="muted" style="margin-top:10px;">Funcionalidad de Google disponible al configurar OAuth.</p>
-        <hr style="margin:14px 0; border:none; border-top:1px solid #e8eef9;">
-        <p class="muted">¿Ya tienes cuenta? <span id="link-login" class="link">Inicia sesión</span>. ¿Eres nuevo? <span
-            id="link-register" class="link">Regístrate</span>.</p>
-
-        <button id="btn-guest" class="btn" style="margin-top: 20px; background: #6c757d; color: white;">Continuar sin
-          iniciar sesión</button>
       </div>
     </div>
   </div>
 
   <script>
-    // CONFIGURACIÓN Y UTILIDADES
-    const API = 'http://localhost:3000';
-    const $ = (s) => document.querySelector(s);
-    const tabLogin = $('#tab-login');
-    const tabRegister = $('#tab-register');
-    const formLogin = $('#form-login');
-    const formRegister = $('#form-register');
-    const msgErr = $('#msg-error');
-    const msgOk = $('#msg-ok');
+    const API = 'http://127.0.0.1:3000/api/auth';
 
-    const showTab = (mode) => {
-      const login = mode === 'login';
-      tabLogin.classList.toggle('active', login);
-      tabRegister.classList.toggle('active', !login);
-      formLogin.classList.toggle('active', login);
-      formRegister.classList.toggle('active', !login);
-      msgErr.style.display = 'none';
-      msgOk.style.display = 'none';
-    };
+    // ── TABS ──
+    function switchTab(tab) {
+      document.getElementById('login-section').classList.toggle('active', tab === 'login');
+      document.getElementById('register-section').classList.toggle('active', tab === 'register');
+      document.getElementById('recovery-panel').style.display = 'none';
+      document.getElementById('login-section').style.display = tab === 'login' ? 'block' : 'none';
+      document.getElementById('register-section').style.display = tab === 'register' ? 'block' : 'none';
+    }
+    function showRecovery() {
+      document.getElementById('login-section').style.display = 'none';
+      document.getElementById('register-section').style.display = 'none';
+      document.getElementById('recovery-panel').style.display = 'block';
+    }
+    function showLogin() {
+      document.getElementById('recovery-panel').style.display = 'none';
+      document.getElementById('recovery-step2').style.display = 'none';
+      document.getElementById('recovery-step1').style.display = 'block';
+      switchTab('login');
+    }
 
-    const setErr = (text) => {
-      msgErr.textContent = text;
-      msgErr.style.display = 'block';
-      msgOk.style.display = 'none';
-    };
+    // ── HELPERS ──
+    function togglePass(id, btn) {
+      const input = document.getElementById(id);
+      input.type = input.type === 'password' ? 'text' : 'password';
+      btn.textContent = input.type === 'password' ? '👁️' : '🙈';
+    }
+    function setError(id, msg) { document.getElementById(id).textContent = msg; }
+    function setLoading(btnId, loading) {
+      const btn = document.getElementById(btnId);
+      btn.classList.toggle('loading', loading);
+      btn.textContent = loading ? 'Cargando...' : btn.dataset.label || btn.textContent;
+    }
 
-    const setOk = (text) => {
-      msgOk.textContent = text;
-      msgOk.style.display = 'block';
-      msgErr.style.display = 'none';
-    };
-
-    // EVENTOS DE TABS
-    tabLogin.addEventListener('click', () => showTab('login'));
-    tabRegister.addEventListener('click', () => showTab('register'));
-    $('#link-login').addEventListener('click', () => showTab('login'));
-    $('#link-register').addEventListener('click', () => showTab('register'));
-
-    // LOGIN
-    formLogin.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = $('#login-email').value.trim();
-      const password = $('#login-password').value;
-
+    // ── LOGIN ──
+    async function handleLogin() {
+      const email = document.getElementById('login-email').value.trim();
+      const password = document.getElementById('login-password').value;
+      setError('login-error', '');
+      if (!email || !password) { setError('login-error', 'Completa todos los campos.'); return; }
+      setLoading('login-btn', true);
       try {
-        const res = await fetch(`${API}/api/auth/login`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ email, password }),
+        const res = await fetch(`${API}/login`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, password })
         });
-
         const data = await res.json();
-        if (!res.ok) return setErr(data.error || 'Credenciales inválidas.');
+        if (!res.ok) throw new Error(data.message || 'Credenciales incorrectas');
+        localStorage.setItem('auth_token', data.token);
+        window.location.href = 'index.html';
+      } catch (e) { setError('login-error', e.message); }
+      finally { setLoading('login-btn', false); }
+    }
 
-        if (data.token) localStorage.setItem('auth_token', data.token);
-
-        setOk('¡Bienvenido! Redirigiendo...');
-        setTimeout(() => (window.location.href = 'index.html'), 700);
-      } catch (err) {
-        console.error(err);
-        setErr('Error de red. No se pudo conectar al servidor.');
-      }
-    });
-
-    // REGISTRO
-    formRegister.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const name = $('#reg-name').value.trim();
-      const email = $('#reg-email').value.trim();
-      const password = $('#reg-password').value;
-
+    // ── REGISTRO ──
+    async function handleRegister() {
+      const nombre = document.getElementById('reg-name').value.trim();
+      const email  = document.getElementById('reg-email').value.trim();
+      const password = document.getElementById('reg-password').value;
+      setError('register-error', '');
+      if (!nombre || !email || !password) { setError('register-error', 'Completa todos los campos.'); return; }
+      if (password.length < 8) { setError('register-error', 'La contraseña debe tener al menos 8 caracteres.'); return; }
+      setLoading('register-btn', true);
       try {
-        const res = await fetch(`${API}/api/auth/register`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          credentials: 'include',
-          body: JSON.stringify({ name, email, password }),
+        const res = await fetch(`${API}/register`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ nombre, email, password })
         });
-
         const data = await res.json();
-        if (!res.ok) return setErr(data.error || 'Error al registrarse');
+        if (!res.ok) throw new Error(data.message || 'Error al registrarse');
+        localStorage.setItem('auth_token', data.token);
+        window.location.href = 'index.html';
+      } catch (e) { setError('register-error', e.message); }
+      finally { setLoading('register-btn', false); }
+    }
 
-        if (data.token) localStorage.setItem('auth_token', data.token);
-
-        setOk('Cuenta creada con exito. Redirigiendo...');
-        setTimeout(() => (window.location.href = 'index.html'), 700);
-      } catch (err) {
-        console.error(err);
-        setErr('Error de red. No se pudo conectar al servidor.');
-      }
-    });
-
-    // BOTÓN GOOGLE (placeholder)
-    $('#btn-google').addEventListener('click', () => {
-      alert('Registro con Google disponible al configurar OAuth en el backend.');
-    });
-
-    // BOTÓN DE INVITADO
-    $('#btn-guest').addEventListener('click', () => {
-      localStorage.removeItem('auth_token'); // Asegurar que no haya token viejo
+    // ── INVITADO ──
+    function continueAsGuest() {
+      localStorage.removeItem('auth_token');
       window.location.href = 'index.html';
-    });
+    }
 
-    // RECUPERACIÓN DE CONTRASEÑA
-    const formRecovery = $('#form-recovery');
-    const stepRequest = $('#step-request');
-    const stepVerify = $('#step-verify');
-
-    $('#link-forgot').addEventListener('click', () => {
-      formLogin.classList.remove('active');
-      formRegister.classList.remove('active');
-      formRecovery.classList.add('active');
-      tabLogin.classList.remove('active');
-      tabRegister.classList.remove('active');
-      msgErr.style.display = 'none';
-      msgOk.style.display = 'none';
-    });
-
-    $('#link-back-login').addEventListener('click', () => showTab('login'));
-
-    // Enviar Código
-    $('#btn-send-code').addEventListener('click', async () => {
-      const email = $('#rec-email').value.trim();
-      if (!email) return setErr('Ingresa tu email.');
-
+    // ── RECUPERACIÓN ──
+    async function sendRecoveryCode() {
+      const email = document.getElementById('recovery-email').value.trim();
+      setError('recovery-error', '');
+      if (!email) { setError('recovery-error', 'Escribe tu correo.'); return; }
       try {
-        const res = await fetch(`${API}/api/auth/forgot-password`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
+        const res = await fetch(`${API}/request-reset`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ email })
         });
         const data = await res.json();
-        if (!res.ok) return setErr(data.error);
+        if (!res.ok) throw new Error(data.message || 'Error al enviar código');
+        document.getElementById('recovery-step1').style.display = 'none';
+        document.getElementById('recovery-step2').style.display = 'block';
+      } catch (e) { setError('recovery-error', e.message); }
+    }
 
-        setOk(data.message);
-        stepRequest.style.display = 'none';
-        stepVerify.style.display = 'block';
-      } catch (err) {
-        setErr('Error de conexión.');
-      }
-    });
-
-    // Cambiar Contraseña
-    formRecovery.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const email = $('#rec-email').value.trim();
-      const code = $('#rec-code').value.trim();
-      const newPassword = $('#rec-new-pass').value;
-
+    async function resetPassword() {
+      const email    = document.getElementById('recovery-email').value.trim();
+      const codigo   = document.getElementById('recovery-code').value.trim();
+      const password = document.getElementById('new-password').value;
+      setError('reset-error', '');
+      if (!codigo || !password) { setError('reset-error', 'Completa todos los campos.'); return; }
       try {
-        const res = await fetch(`${API}/api/auth/reset-password`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ email, code, newPassword })
+        const res = await fetch(`${API}/reset-password`, {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ email, token: codigo, newPassword: password })
         });
         const data = await res.json();
-        if (!res.ok) return setErr(data.error);
+        if (!res.ok) throw new Error(data.message || 'Error al cambiar contraseña');
+        alert('¡Contraseña actualizada! Por favor inicia sesión.');
+        showLogin();
+      } catch (e) { setError('reset-error', e.message); }
+    }
 
-        setOk('Contraseña actualizada. Inicia sesión.');
-        setTimeout(() => showTab('login'), 2000);
-
-        // Reset form
-        stepRequest.style.display = 'block';
-        stepVerify.style.display = 'none';
-        formRecovery.reset();
-      } catch (err) {
-        setErr('Error de conexión.');
+    // Tecla Enter en login
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const loginSection = document.getElementById('login-section');
+        const registerSection = document.getElementById('register-section');
+        if (loginSection && loginSection.classList.contains('active')) handleLogin();
+        else if (registerSection && registerSection.classList.contains('active')) handleRegister();
       }
     });
   </script>
