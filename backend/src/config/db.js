@@ -82,17 +82,26 @@ async function initDB() {
       )
     `);
 
-    // Columnas de perfil (ALTER IF NOT EXISTS es seguro y repetible)
+    // Columnas de perfil (Try/catch evita errores de columnas repetidas y es compatible con MySQL antiguo)
     const profileCols = [
-      "ALTER TABLE users ADD COLUMN IF NOT EXISTS apodo VARCHAR(50) DEFAULT NULL",
-      "ALTER TABLE users ADD COLUMN IF NOT EXISTS avatar_url VARCHAR(500) DEFAULT NULL",
-      "ALTER TABLE users ADD COLUMN IF NOT EXISTS area_estudio VARCHAR(100) DEFAULT NULL",
-      "ALTER TABLE users ADD COLUMN IF NOT EXISTS nivel_academico VARCHAR(50) DEFAULT NULL",
-      "ALTER TABLE users ADD COLUMN IF NOT EXISTS intereses TEXT DEFAULT NULL",
-      "ALTER TABLE users ADD COLUMN IF NOT EXISTS onboarding_done TINYINT(1) DEFAULT 0"
+      "ALTER TABLE users ADD COLUMN apodo VARCHAR(50) DEFAULT NULL",
+      "ALTER TABLE users ADD COLUMN avatar_url VARCHAR(500) DEFAULT NULL",
+      "ALTER TABLE users ADD COLUMN area_estudio VARCHAR(100) DEFAULT NULL",
+      "ALTER TABLE users ADD COLUMN nivel_academico VARCHAR(50) DEFAULT NULL",
+      "ALTER TABLE users ADD COLUMN intereses TEXT DEFAULT NULL",
+      "ALTER TABLE users ADD COLUMN onboarding_done TINYINT(1) DEFAULT 0",
+      "ALTER TABLE users ADD COLUMN google_id VARCHAR(255) DEFAULT NULL",
+      "ALTER TABLE users MODIFY COLUMN password VARCHAR(255) DEFAULT NULL"
     ];
     for (const sql of profileCols) {
-      await db.query(sql);
+      try {
+        await db.query(sql);
+      } catch (err) {
+        // Ignoramos el error si la columna ya existe
+        if (err.code !== 'ER_DUP_FIELDNAME') {
+          console.error("Error agregando columna:", err.message);
+        }
+      }
     }
 
     console.log('✅ Base de datos inicializada (tablas verificadas)');

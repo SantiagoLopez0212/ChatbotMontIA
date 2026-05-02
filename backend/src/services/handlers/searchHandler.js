@@ -15,6 +15,7 @@ class SearchHandler extends ChatHandler {
     // Evitar capturar intenciones de paginación o explicación
     if (/^(dame\s+m[aá]s|ver\s+m[aá]s|siguientes|más resultados|mostrar\s+m[aá]s)$/.test(normalizedMessage)) return false;
     if (/^(explicar|expl[íi]came|resumir|resumen|analizar|act[uú]a)\b/.test(normalizedMessage)) return false;
+    if (normalizedMessage.includes('quiero hacer focus mode')) return false;
 
     return isSearchIntent(normalizedMessage);
   }
@@ -53,11 +54,23 @@ class SearchHandler extends ChatHandler {
     }
   }
 
-  // Búsqueda combinada con filtros
+  // Búsqueda combinada con filtros - OPTIMIZADA
   async searchArticles(query, filters, limit = 5, offset = 0) {
-    // 1. Ejecutar estrategias en paralelo
+    // Timeout externo alineado con el timeout interno de cada estrategia (8s > 7s de axios)
+    const withTimeout = (promise, ms) => {
+      const timeout = new Promise((_, reject) =>
+        setTimeout(() => reject(new Error('Timeout')), ms)
+      );
+      return Promise.race([promise, timeout]);
+    };
+
+    // 1. Ejecutar estrategias en paralelo con timeout de 8s
     const promises = this.searchStrategies.map(strategy =>
-      strategy.search(query, filters, limit, offset)
+      withTimeout(strategy.search(query, filters, limit, offset), 8000)
+        .catch(err => {
+          console.warn(`[${strategy.name}] no disponible temporalmente: ${err.message}`);
+          return [];
+        })
     );
 
     const resultsArrays = await Promise.all(promises);
@@ -70,12 +83,50 @@ class SearchHandler extends ChatHandler {
       (v, i, arr) => arr.findIndex(t => (t.doi && t.doi === v.doi) || (t.title === v.title && t.author === v.author)) === i
     );
 
-    // 4. Aplicar filtros adicionales localmente
-    const filtered = this.applyLocalFilters(unique, filters);
+    // 4. Filtrar por relevancia temática (el título debe contener palabras clave del query)
+    const relevant = this._filterByRelevance(unique, query);
+
+    // 5. Aplicar filtros adicionales localmente
+    const filtered = this.applyLocalFilters(relevant, filters);
 
     return filtered.slice(0, limit);
   }
 
+
+  // Filtra resultados cuyo título no contenga ninguna palabra significativa del query.
+  // Evita que artículos sobre temas completamente distintos aparezcan en los resultados.
+  _filterByRelevance(results, query) {
+    const STOPWORDS = new Set([
+      'de','del','la','el','los','las','en','y','a','o','un','una','unos','unas',
+      'sobre','para','con','por','que','se','no','al','lo','su','sus','es','son',
+      'le','les','me','mi','tu','si','ya','mas','muy','esto','este','esta','the',
+      'of','in','and','for','to','an','on','with','by','at','from'
+    ]);
+
+    // Palabras de intención que no describen el tema y no deben usarse para
+    // juzgar relevancia (causan falsos positivos cuando aparecen en títulos)
+    const INTENT_WORDS = new Set([
+      'buscar','busca','busco','encuentra','encontrar','dame','muestrame',
+      'quiero','necesito','listar','traer','obtener','articulos','articulo',
+      'papers','paper','investigaciones','investigacion','publicaciones',
+      'publicacion','documentos','documento','libros','libro','estudios',
+      'estudio','journals','journal','conferencias','conferencia'
+    ]);
+
+    const norm = t => (t || '').toLowerCase()
+      .normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+
+    const queryWords = norm(query)
+      .split(/\s+/)
+      .filter(w => w.length > 2 && !STOPWORDS.has(w) && !INTENT_WORDS.has(w));
+
+    if (queryWords.length === 0) return results;
+
+    return results.filter(item => {
+      const titleNorm = norm(item.title);
+      return queryWords.some(word => titleNorm.includes(word));
+    });
+  }
 
   // ... applyLocalFilters se mantiene igual ...
   applyLocalFilters(results, filters) {
@@ -87,7 +138,16 @@ class SearchHandler extends ChatHandler {
 
       if (filters.language && filters.language !== 'Todos') {
         const lang = (item.language || '').toLowerCase();
-        if (!lang.includes(filters.language.toLowerCase())) return false;
+        const wantedLang = filters.language.toLowerCase();
+
+        // Rechazar si el metadato de idioma es explícitamente diferente
+        if (lang && !lang.startsWith(wantedLang)) return false;
+
+        // Heurística de respaldo: algunos artículos tienen metadatos de idioma
+        // incorrectos en las APIs. Detectamos el idioma real por caracteres del título.
+        const title = item.title || '';
+        if (wantedLang === 'en' && /[áéíóúüñãõàèìòùâêîôûäëïöÿç]/i.test(title)) return false;
+        if (wantedLang === 'es' && !/[áéíóúüñ]/i.test(title) && /^[a-zA-Z0-9\s.,;:()\-'"]+$/.test(title)) return false;
       }
 
       if (filters.articleType && filters.articleType !== 'Todos') {

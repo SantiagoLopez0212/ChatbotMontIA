@@ -1,13 +1,3 @@
-/**
- * chatbotService.js - Orquestador principal del chatbot
- *
- * SRP: Este servicio SOLO orquesta los handlers y las sesiones.
- * La gestión de sesiones fue extraída a domain/SessionManager.js.
- * 
- * Patrón: Chain of Responsibility — los handlers se encadenan en orden.
- * Patrón: Factory Method — las estrategias de búsqueda se crean via Factory.
- * Patrón: Dependency Injection — SearchHandler recibe las estrategias como parámetro.
- */
 const { normalizeText } = require('../domain/textUtils');
 const { getSession, setDocumentContext } = require('../domain/SessionManager');
 
@@ -54,10 +44,11 @@ const handlers = [
  * @param {string} message
  * @param {Object} filters
  * @param {string|null} userId
+ * @param {number|string|null} conversationId
  * @returns {Promise<{text: string, type: string, data?: any}>}
  */
-async function handleMessage(message, filters = {}, userId = null) {
-  const session = getSession(userId);
+async function handleMessage(message, filters = {}, userId = null, conversationId = null) {
+  const session = getSession(userId, conversationId);
 
   // Onboarding: tiene prioridad sobre cualquier otro handler
   const onboardingCtx = {

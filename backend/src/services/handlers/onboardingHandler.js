@@ -7,7 +7,7 @@
  * SRP: Solo gestiona el flujo de onboarding.
  * Bajo acoplamiento: accede a la BD y a la sesión, no conoce al chatbot principal.
  */
-const { getPool } = require('../config/db');
+const { getPool } = require('../../config/db');
 
 // Pasos del onboarding (pregunta → campo BD)
 const ONBOARDING_STEPS = [

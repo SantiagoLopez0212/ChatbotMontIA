@@ -1,7 +1,3 @@
-/**
- * Interfaz base para estrategias de búsqueda (Strategy Pattern).
- * Cumple con OCP: permite agregar nuevos proveedores sin tocar el código base.
- */
 class SearchStrategy {
     /**
      * Nombre del proveedor (para logs o debugging)
@@ -11,7 +7,7 @@ class SearchStrategy {
     }
 
     /**
-     * Ejecuta la búsqueda.
+     * Aqui ejecutamos la busqueda 
      * @param {string} query
      * @param {object} filters
      * @param {number} limit

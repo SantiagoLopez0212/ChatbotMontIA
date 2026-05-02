@@ -44,12 +44,16 @@ class Session {
 const sessions = new Map();
 
 /**
- * Obtiene o crea la sesión para un usuario dado.
+ * Obtiene o crea la sesión para un usuario dado en un chat específico.
  * @param {string|null} userId - ID del usuario (o null para anónimo)
+ * @param {number|string|null} conversationId - ID del chat abierto
  * @returns {Session}
  */
-function getSession(userId) {
-  const key = userId || 'anonymous';
+function getSession(userId, conversationId) {
+  const userKey = userId || 'anonymous';
+  const chatKey = conversationId || 'default';
+  const key = `${userKey}_${chatKey}`;
+
   if (!sessions.has(key)) {
     sessions.set(key, new Session(key));
   }
@@ -57,12 +61,13 @@ function getSession(userId) {
 }
 
 /**
- * Establece el contexto de documento PDF en la sesión de un usuario.
+ * Establece el contexto de documento PDF en la sesión de un usuario para este chat puntual.
  * @param {string|null} userId
+ * @param {number|string|null} conversationId
  * @param {string} text - Texto extraído del PDF
  */
-function setDocumentContext(userId, text) {
-  const session = getSession(userId);
+function setDocumentContext(userId, conversationId, text) {
+  const session = getSession(userId, conversationId);
   session.documentContext = text;
 }
 

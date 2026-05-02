@@ -1,8 +1,7 @@
-// ================================
 // VOICE MODE — MontIA
 // Speech-to-Text, Text-to-Speech, Podcast Mode
 // Usa APIs nativas del navegador (100% gratis)
-// ================================
+
 
 const VoiceMode = (() => {
     let recognition = null;
@@ -10,9 +9,7 @@ const VoiceMode = (() => {
     let autoReadEnabled = false;
     let currentUtterance = null;
 
-    // =====================
     // SPEECH-TO-TEXT (Micrófono)
-    // =====================
     function initSpeechRecognition() {
         const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
         if (!SpeechRecognition) {
@@ -88,10 +85,8 @@ const VoiceMode = (() => {
             recognition.start();
         }
     }
-
-    // =====================
+    
     // TEXT-TO-SPEECH (Voz del bot)
-    // =====================
     function speak(text) {
         if (!window.speechSynthesis) {
             console.warn('SpeechSynthesis no soportado.');

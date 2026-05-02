@@ -10,6 +10,17 @@
   <link rel="stylesheet" href="style.css" />
   <script src="https://unpkg.com/vis-network/standalone/umd/vis-network.min.js"></script>
   <script>
+    // ── CHECK FOR GOOGLE AUTH TOKEN IN URL ──
+    (function checkGoogleAuthToken() {
+      const params = new URLSearchParams(window.location.search);
+      const token = params.get('token');
+      if (token) {
+        localStorage.setItem('auth_token', token);
+        // Clean URL
+        window.history.replaceState({}, document.title, window.location.pathname);
+      }
+    })();
+
     document.addEventListener('DOMContentLoaded', async () => {
       const token = localStorage.getItem('auth_token');
       if (!token) { console.log('Modo invitado activo'); return; }
@@ -48,7 +59,7 @@
       </div>
       <div class="sidebar-user-info">
         <span id="sidebar-apodo">Invitado</span>
-        <span class="sidebar-email">Mi perfil ✏️</span>
+        <span class="sidebar-email">Mi perfil</span>
       </div>
     </a>
   </aside>
@@ -84,7 +95,7 @@
       <button id="attach-btn" type="button" class="attach-btn" title="Adjuntar PDF">📎</button>
       <input id="user-input" type="text" placeholder="Escribe tu mensaje..." autocomplete="off" />
       <button id="mic-btn" type="button" class="mic-btn" title="Hablar por micrófono">🎙️</button>
-      <button type="submit">Enviar</button>
+      <button type="submit" id="send-btn">Enviar</button>
     </form>
   </div>
 
@@ -131,22 +142,34 @@
   <div id="mindmap-modal" class="mindmap-modal">
     <div class="mindmap-modal-content">
       <div class="mindmap-modal-header">
-        <h2>🧠 Mapa de Conocimiento</h2>
-        <button id="mindmap-close" class="mindmap-close-btn">×</button>
-      </div>
-      <div id="mindmap-loading" class="mindmap-loading">
-        <div class="mindmap-spinner"></div>
-        <span>Generando mapa conceptual con IA...</span>
-      </div>
-      <div id="mindmap-graph" class="mindmap-graph"></div>
-      <div id="mindmap-legend" class="mindmap-legend" style="display:none;">
-        <div class="legend-item"><span class="legend-dot" style="background:#FFD700;"></span> Tema central</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#4A90D9;"></span> Artículo</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#2ECC71;"></span> Tema emergente</div>
-        <div class="legend-item"><span class="legend-dot" style="background:#E74C3C;"></span> Brecha de investigación
+        <h2>Mapa de Conocimiento</h2>
+        <div style="display:flex; gap:0.5rem; align-items:center;">
+          <span id="mindmap-node-count" class="mindmap-node-count"></span>
+          <button id="mindmap-close" class="mindmap-close-btn">×</button>
         </div>
-        <div class="legend-tip">Click en nodo = zoom · Doble click = ver todo · Arrastra para mover</div>
       </div>
+      <!-- Cuerpo: grafo + panel lateral -->
+      <div class="mindmap-body">
+        <div id="mindmap-loading" class="mindmap-loading">
+          <div class="mindmap-spinner"></div>
+          <span>Generando mapa conceptual con IA...</span>
+        </div>
+        <div id="mindmap-graph" class="mindmap-graph"></div>
+        <!-- Panel lateral de detalles del nodo -->
+        <div id="mindmap-detail-panel" class="mindmap-detail-panel">
+          <button id="mindmap-panel-close" class="mindmap-panel-close">×</button>
+          <div id="mindmap-panel-content" class="mindmap-panel-content"></div>
+        </div>
+      </div>
+      <div id="mindmap-legend" class="mindmap-legend" style="display:none;">
+        <div class="legend-item"><span class="legend-dot" style="background:#FFD700; box-shadow: 0 0 10px #FFD700;"></span> Tema central</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#4A90D9; box-shadow: 0 0 10px #4A90D9;"></span> Artículo</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#2ECC71; box-shadow: 0 0 10px #2ECC71;"></span> Tema emergente</div>
+        <div class="legend-item"><span class="legend-dot" style="background:#E74C3C; box-shadow: 0 0 10px #E74C3C;"></span> Brecha / Gap</div>
+        <span class="legend-tip">Hover: Detalles &nbsp;|&nbsp; Clic: Panel &nbsp;|&nbsp; Arrastrar para mover</span>
+      </div>
+      <!-- Tooltip de hover -->
+      <div id="custom-tooltip" class="mindmap-tooltip"></div>
     </div>
   </div>
 

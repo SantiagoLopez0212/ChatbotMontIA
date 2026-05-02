@@ -18,32 +18,47 @@ class GeminiProvider {
     async generateResponse(messages) {
         if (!GEMINI_API_KEY) return "Error: API Key de Gemini no configurada.";
 
-        try {
-            const model = this.genAI.getGenerativeModel({ model: this.modelName });
+        const maxRetries = 3;
+        let attempt = 0;
 
-            const systemMessage = messages.find(m => m.role === 'system')?.content || "";
-            const userMessages = messages.filter(m => m.role === 'user');
-            const lastUserMessage = userMessages[userMessages.length - 1]?.content || "";
+        while (attempt < maxRetries) {
+            try {
+                const model = this.genAI.getGenerativeModel({ model: this.modelName });
 
-            const finalPrompt = `${systemMessage}\n\nUsuario: ${lastUserMessage}`;
+                const systemMessage = messages.find(m => m.role === 'system')?.content || "";
+                const userMessages = messages.filter(m => m.role === 'user');
+                const lastUserMessage = userMessages[userMessages.length - 1]?.content || "";
 
-            const result = await model.generateContent(finalPrompt);
-            const response = await result.response;
-            return response.text();
-        } catch (error) {
-            console.error("--- ERROR GEMINI DETALLADO ---");
-            console.error("Mensaje:", error.message);
+                const finalPrompt = `${systemMessage}\n\nUsuario: ${lastUserMessage}`;
 
-            let userFriendlyMsg = `Lo siento, hubo un error técnico con la IA (${this.modelName}).`;
+                const result = await model.generateContent(finalPrompt);
+                const response = await result.response;
+                return response.text();
+            } catch (error) {
+                attempt++;
+                const isOverloaded = error.message.includes("503") || error.message.includes("429") || error.message.includes("quota");
 
-            if (error.message.includes("403") || error.message.includes("permission")) {
-                userFriendlyMsg += " Error de permisos (403). Verifica que tu API Key esté activa y que tu región sea compatible.";
-            } else if (error.message.includes("quota") || error.message.includes("429")) {
-                userFriendlyMsg += " Límite de cuota excedido. Intenta en un minuto.";
+                if (isOverloaded && attempt < maxRetries) {
+                    console.warn(`[Gemini] Error de cuota/congestión (503/429). Reintento ${attempt}/${maxRetries} en ${attempt * 2} segundos...`);
+                    // Esperar 2s, 4s, etc. antes del próximo intento
+                    await new Promise(resolve => setTimeout(resolve, attempt * 2000));
+                    continue; // Reintentar
+                }
+
+                console.error("--- ERROR GEMINI DETALLADO ---");
+                console.error("Mensaje:", error.message);
+
+                let userFriendlyMsg = `Lo siento, hubo un error técnico con la IA (${this.modelName}).`;
+
+                if (error.message.includes("403") || error.message.includes("permission")) {
+                    userFriendlyMsg += " Error de permisos (403). Verifica que tu API Key esté activa y que tu región sea compatible.";
+                } else if (isOverloaded) {
+                    userFriendlyMsg += " Límite de cuota excedido temporalmente. Por favor, intenta de nuevo en unos momentos.";
+                }
+
+                console.error("------------------------------");
+                return userFriendlyMsg;
             }
-
-            console.error("------------------------------");
-            return userFriendlyMsg;
         }
     }
 }

@@ -1,16 +1,28 @@
 const axios = require('axios');
 const SearchStrategy = require('./SearchStrategy');
 
+// Cache simple en memoria
+const cache = new Map();
+const CACHE_TTL = 5 * 60 * 1000; // 5 minutos
+
 class OpenAlexStrategy extends SearchStrategy {
     get name() {
         return 'OpenAlex';
     }
 
     async search(query, filters, limit, offset = 0) {
+        const cacheKey = `openalex:${query}:${JSON.stringify(filters)}:${limit}:${offset}`;
+        
+        // Verificar cache
+        const cached = cache.get(cacheKey);
+        if (cached && Date.now() - cached.timestamp < CACHE_TTL) {
+            return cached.data;
+        }
+
         try {
             // OpenAlex usa paginación por página (page=1, page=2...)
             const page = Math.floor(offset / limit) + 1;
-            const fetchLimit = limit * 2; // Pedir más resultados
+            const fetchLimit = limit * 2; // Reducido de *3 a *2
             let url = `https://api.openalex.org/works?search=${encodeURIComponent(query)}&per_page=${fetchLimit}&page=${page}`;
 
             const openAlexFilters = [];
@@ -27,15 +39,14 @@ class OpenAlexStrategy extends SearchStrategy {
             if (filters.articleType && filters.articleType !== 'Todos') {
                 const t = filters.articleType.toLowerCase();
                 if (t === 'journal' || t === 'scientific') openAlexFilters.push('type:article');
-                // Para conference no aplicamos filtro estricto en OpenAlex por ahora
             }
 
             if (openAlexFilters.length) url += `&filter=${openAlexFilters.join(',')}`;
 
-            const { data } = await axios.get(url, { timeout: 10000 });
+            const { data } = await axios.get(url, { timeout: 7000 });
             const results = data?.results || [];
 
-            return results.map(w => ({
+            const mappedResults = results.map(w => ({
                 source: 'OpenAlex',
                 title: w.title || 'Sin título',
                 author: (w.authorships || [])
@@ -50,6 +61,21 @@ class OpenAlexStrategy extends SearchStrategy {
                 language: w.language || '',
                 openAccess: w.open_access?.is_oa || false
             }));
+
+            // Filtro de calidad
+            const result = mappedResults
+                .filter(item =>
+                    item.author !== 'Autor desconocido' &&
+                    item.author.trim() !== '' &&
+                    item.title !== 'Sin título' &&
+                    item.year !== 's.f.'
+                )
+                .slice(0, limit);
+
+            // Guardar en cache
+            cache.set(cacheKey, { data: result, timestamp: Date.now() });
+
+            return result;
         } catch (err) {
             console.error('Error OpenAlex:', err.message);
             return [];

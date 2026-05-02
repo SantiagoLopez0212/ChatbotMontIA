@@ -5,7 +5,6 @@ const GoogleBooksStrategy = require('../adapters/providers/search/GoogleBooksStr
 class SearchStrategyFactory {
     /**
      * Crea y retorna todas las estrategias de búsqueda disponibles.
-     * Este método actúa como un Factory Method estático.
      * @returns {Array<SearchStrategy>} Lista de estrategias instanciadas.
      */
     static createAllStrategies() {

@@ -1,7 +1,5 @@
--- ============================================================
 -- Base de datos para MontIA Chatbot Académico
 -- Ejecutar en MySQL Workbench (pestaña SQL)
--- ============================================================
 
 CREATE DATABASE IF NOT EXISTS `proyecto_chatbot`
   DEFAULT CHARACTER SET utf8mb4

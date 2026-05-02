@@ -1,9 +1,9 @@
-/* ============================================================
+/*
    MontIA Academic Obsidian — Design System
    Colors: Navy #0b102f | Indigo #6366f1 | Purple #8b5cf6 | Cyan #22d3ee
    Fonts: Space Grotesk (headlines) + Inter (body)
    Philosophy: Glassmorphism, no solid borders, glow over shadows
-   ============================================================ */
+ */
 
 @import url('https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Inter:wght@400;500;600&display=swap');
 
@@ -362,7 +362,11 @@ body {
   flex-direction: column;
   gap: 1rem;
   scroll-behavior: smooth;
-  background: var(--bg);
+  background: var(--surface-low);
+  margin: 1rem;
+  border-radius: var(--radius-xl);
+  border: 1px solid var(--outline);
+  box-shadow: inset 0 2px 8px rgba(0,0,0,0.2);
 }
 
 /* Mensaje base */
@@ -398,6 +402,34 @@ body {
   border-bottom-left-radius: 4px;
   border-left: 2px solid var(--cyan);
   box-shadow: 0 0 0 0 transparent;
+}
+
+/* ── THINKING INDICATOR ── */
+.message.thinking {
+  background: rgba(34,211,238,0.08);
+  border-left-color: var(--cyan);
+  animation: pulse 1.5s infinite;
+}
+.thinking-dots {
+  display: inline-flex;
+  align-items: center;
+  color: var(--cyan);
+}
+.thinking-dots span {
+  animation: dotBounce 1.4s infinite;
+  animation-delay: calc(var(--i, 0) * 0.2s);
+}
+.thinking-dots span:nth-child(2) { --i: 1; }
+.thinking-dots span:nth-child(3) { --i: 2; }
+.thinking-dots span:nth-child(4) { --i: 3; }
+
+@keyframes dotBounce {
+  0%, 60%, 100% { opacity: 0.3; }
+  30% { opacity: 1; }
+}
+@keyframes pulse {
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.7; }
 }
 
 /* ── DOC INDICATOR ── */
@@ -751,6 +783,7 @@ button[type="submit"]:hover {
   box-shadow: 0 32px 80px rgba(0,0,0,0.6);
   display: flex; flex-direction: column;
   overflow: hidden;
+  position: relative;
 }
 
 .mindmap-modal-header {
@@ -786,13 +819,21 @@ button[type="submit"]:hover {
   transform: rotate(90deg);
 }
 
-.mindmap-graph { flex: 1; width: 100%; min-height: 0; }
+/* ── Cuerpo (grafo + panel) ── */
+.mindmap-body {
+  flex: 1; display: flex; flex-direction: row; min-height: 0; position: relative;
+}
+
+.mindmap-graph { flex: 1; min-height: 0; }
 
 .mindmap-loading {
-  flex: 1; display: flex; flex-direction: column;
+  position: absolute; inset: 0;
+  display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 1rem; padding: 2.5rem;
+  background: rgba(15,12,41,0.6);
   color: var(--on-muted); font-size: 0.95rem;
+  z-index: 10;
 }
 .mindmap-spinner {
   width: 46px; height: 46px;
@@ -803,22 +844,109 @@ button[type="submit"]:hover {
 }
 @keyframes spin { to { transform: rotate(360deg); } }
 
+/* ── Panel lateral de detalles ── */
+.mindmap-detail-panel {
+  width: 0; overflow: hidden;
+  background: rgba(255,255,255,0.04);
+  border-left: 1px solid transparent;
+  transition: width 0.3s ease, border-color 0.3s ease;
+  display: flex; flex-direction: column;
+}
+.mindmap-detail-panel.active {
+  width: 300px;
+  border-color: var(--outline);
+  overflow-y: auto;
+}
+.mindmap-panel-close {
+  position: sticky; top: 0; right: 0;
+  align-self: flex-end; margin: 0.75rem 0.75rem 0 0;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid var(--outline);
+  color: var(--on-muted);
+  width: 28px; height: 28px; font-size: 1rem;
+  border-radius: 50%; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  transition: all 0.2s;
+  flex-shrink: 0;
+  z-index: 2;
+}
+.mindmap-panel-close:hover { background: rgba(231,76,60,0.25); color: #ff8080; transform: rotate(90deg); }
+
+.mindmap-panel-content { padding: 0.5rem 1.1rem 1.5rem; }
+
+.panel-type-badge {
+  display: inline-flex; align-items: center; gap: 0.3em;
+  font-size: 0.72rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.06em;
+  padding: 3px 10px; border-radius: 20px;
+  background: color-mix(in srgb, var(--badge-color, #4A90D9) 15%, transparent);
+  border: 1px solid var(--badge-border, #2980B9);
+  color: var(--badge-color, #4A90D9);
+  margin-bottom: 0.75rem;
+}
+.panel-title {
+  font-size: 0.95rem; font-weight: 700;
+  color: #fff; line-height: 1.35;
+  margin: 0 0 0.65rem;
+}
+.panel-detail {
+  font-size: 0.82rem; color: rgba(255,255,255,0.65);
+  line-height: 1.55; margin: 0 0 1.2rem;
+}
+.panel-actions {
+  display: flex; flex-direction: column; gap: 0.5rem;
+}
+.panel-btn {
+  display: inline-flex; align-items: center; justify-content: center; gap: 0.4em;
+  padding: 0.55rem 1rem; border-radius: 8px;
+  font-size: 0.82rem; font-weight: 600; cursor: pointer;
+  text-decoration: none; border: none; transition: all 0.2s;
+}
+.panel-btn-primary {
+  background: linear-gradient(135deg, #2980B9, #4A90D9);
+  color: #fff;
+}
+.panel-btn-primary:hover { filter: brightness(1.15); transform: translateY(-1px); }
+.panel-btn-secondary {
+  background: rgba(255,255,255,0.07);
+  border: 1px solid var(--outline);
+  color: rgba(255,255,255,0.8);
+}
+.panel-btn-secondary:hover { background: rgba(255,255,255,0.12); }
+
+/* ── Leyenda ── */
 .mindmap-legend {
   display: flex; flex-wrap: wrap; justify-content: center; align-items: center;
-  gap: 1rem; padding: 0.75rem 1.5rem;
+  gap: 1rem; padding: 0.65rem 1.5rem;
   background: rgba(255,255,255,0.03);
   border-top: 1px solid var(--outline);
 }
 .legend-item {
   display: flex; align-items: center; gap: 0.4rem;
-  color: rgba(255,255,255,0.7); font-size: 0.8rem;
+  color: rgba(255,255,255,0.7); font-size: 0.78rem;
 }
 .legend-dot {
-  width: 12px; height: 12px;
+  width: 11px; height: 11px;
   border-radius: 50%; display: inline-block;
-  box-shadow: 0 0 6px rgba(0,0,0,0.3);
 }
-.legend-tip { color: rgba(255,255,255,0.35); font-size: 0.75rem; font-style: italic; }
+.legend-tip { color: rgba(255,255,255,0.3); font-size: 0.73rem; font-style: italic; }
+.mindmap-node-count {
+  font-size: 0.72rem; color: rgba(255,255,255,0.35);
+  background: rgba(255,255,255,0.06);
+  padding: 2px 8px; border-radius: 12px;
+}
+
+/* ── Tooltip de hover ── */
+.mindmap-tooltip {
+  position: absolute; display: none;
+  background: rgba(10,15,30,0.96);
+  padding: 11px 14px; border-radius: 9px;
+  border: 1px solid rgba(74,144,217,0.5);
+  box-shadow: 0 6px 20px rgba(0,0,0,0.8);
+  max-width: 290px;
+  pointer-events: none; z-index: 1000; color: white;
+  font-family: var(--font-body, sans-serif);
+  animation: fadeIn 0.12s ease;
+}
 
 /* ── GLOBAL BUTTON OVERRIDE ── */
 button { font-family: var(--font-body); }

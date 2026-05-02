@@ -1,34 +1,72 @@
-// ================================
 // CHAT PRINCIPAL MONTIA
-// ================================
+
 const chatBox = document.getElementById('chat-box');
 const form = document.getElementById('chat-form');
 const input = document.getElementById('user-input');
 
+/**
+ * Convierte Markdown básico a HTML
+ * Soporta: **negrita**, *cursiva*, ## títulos, listas, saltos de línea
+ */
+function parseMarkdown(text) {
+  return text
+    // Escapar HTML primero
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;')
+    // Títulos ## y ###
+    .replace(/^### (.+)$/gm, '<strong>$1</strong>')
+    .replace(/^## (.+)$/gm, '<strong style="font-size:1.1em;">$1</strong>')
+    .replace(/^# (.+)$/gm, '<strong style="font-size:1.2em;">$1</strong>')
+    // Negritas **texto** o __texto__
+    .replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>')
+    .replace(/__(.+?)__/g, '<strong>$1</strong>')
+    // Cursivas *texto* o _texto_
+    .replace(/\*(.+?)\*/g, '<em>$1</em>')
+    .replace(/_(.+?)_/g, '<em>$1</em>')
+    // Listas con - o *
+    .replace(/^[\-\*] (.+)$/gm, '• $1')
+    // Saltos de línea dobles a párrafos
+    .replace(/\n\n/g, '<br><br>')
+    // Saltos de línea simples
+    .replace(/\n/g, '<br>');
+}
+
 function addMessage(text, sender) {
   const msg = document.createElement('div');
   msg.classList.add('message', sender);
-  msg.textContent = text.replace(/<[^>]*>/g, '');
+  if (sender === 'bot') {
+    msg.innerHTML = parseMarkdown(text);
+  } else {
+    msg.textContent = text.replace(/<[^>]*>/g, '');
+  }
   chatBox.appendChild(msg);
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
 function typeWriterEffect(text, element) {
-  const cleanText = text.replace(/<[^>]*>/g, '');
+  // Para el efecto de escritura, primero parseamos el markdown
+  const parsedText = parseMarkdown(text);
+  // Extraemos solo el texto para el efecto (sin tags HTML)
+  const plainText = parsedText.replace(/<[^>]*>/g, '').replace(/&lt;/g, '<').replace(/&gt;/g, '>').replace(/&amp;/g, '&');
+
   let index = 0;
   element.textContent = '';
+
   const interval = setInterval(() => {
-    if (index < cleanText.length) {
-      element.textContent += cleanText.charAt(index);
+    if (index < plainText.length) {
+      element.textContent += plainText.charAt(index);
       index++;
       chatBox.scrollTop = chatBox.scrollHeight;
-    } else clearInterval(interval);
-  }, 10);
+    } else {
+      clearInterval(interval);
+      // Al terminar, aplicamos el formato HTML completo
+      element.innerHTML = parsedText;
+    }
+  }, 8); // Un poco más rápido
 }
 
-// ================================
 // Filtros de búsqueda
-// ================================
 let currentFilters = {};
 
 document.getElementById("applyFiltersBtn").addEventListener("click", () => {
@@ -52,15 +90,20 @@ function appendSystemMessage(text) {
   chatBox.scrollTop = chatBox.scrollHeight;
 }
 
-// ================================
 // Envío de mensajes
-// ================================
 form.addEventListener('submit', async (e) => {
   e.preventDefault();
   const userMsg = input.value.trim();
   if (!userMsg) return;
 
   const token = localStorage.getItem('auth_token');
+  const sendBtn = document.getElementById('send-btn');
+
+  // Deshabilitar botón mientras procesa
+  if (sendBtn) {
+    sendBtn.disabled = true;
+    sendBtn.textContent = '⏳';
+  }
 
   // Si hay token, lógica de historial
   if (token) {
@@ -79,6 +122,7 @@ form.addEventListener('submit', async (e) => {
           renderHistory();
         }
       } catch (err) {
+        if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Enviar'; }
         return console.error('Error creando chat inicial:', err);
       }
     }
@@ -102,13 +146,23 @@ form.addEventListener('submit', async (e) => {
     input.value = '';
   }
 
+  // Mostrar indicador de "pensando"
+  const thinkingMsg = document.createElement('div');
+  thinkingMsg.classList.add('message', 'bot', 'thinking');
+  thinkingMsg.innerHTML = '<span class="thinking-dots">MontIA está pensando<span>.</span><span>.</span><span>.</span></span>';
+  chatBox.appendChild(thinkingMsg);
+  chatBox.scrollTop = chatBox.scrollHeight;
+
   // Enviar al bot (funciona para ambos modos)
   try {
     const res = await fetch('http://localhost:3000/api/chat', {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ message: userMsg, filters: currentFilters }),
+      body: JSON.stringify({ message: userMsg, filters: currentFilters, conversationId: currentChatId }),
     });
+
+    // Remover indicador de pensando
+    thinkingMsg.remove();
 
     if (!res.ok) throw new Error('Servidor no respondió');
 
@@ -118,14 +172,18 @@ form.addEventListener('submit', async (e) => {
     if (data.type === 'search_results' && data.data) {
       renderSearchResults(data.data);
 
-      // Guardar también en historial si hay sesión (guardamos el texto resumen)
+      // Guardar resultados completos en historial si hay sesión
       if (token && currentChatId) {
         await fetch(`http://localhost:3000/api/history/conversations/${currentChatId}/messages`, {
           method: 'POST',
           headers: getAuthHeaders(),
-          body: JSON.stringify({ sender: 'bot', content: data.reply || 'Resultados de búsqueda' })
+          body: JSON.stringify({
+            sender: 'bot',
+            content: JSON.stringify({ __type: 'search_results', data: data.data, text: data.reply || data.text || 'Resultados de búsqueda' })
+          })
         });
       }
+      if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Enviar'; }
       return; // Salimos para no renderizar doble menesaje
     }
 
@@ -151,17 +209,23 @@ form.addEventListener('submit', async (e) => {
       });
     }
 
-  } catch {
+  } catch (err) {
+    // Remover indicador si aún existe
+    const thinking = document.querySelector('.thinking');
+    if (thinking) thinking.remove();
+
     addMessage('No se pudo conectar con el servidor.', 'bot');
+  } finally {
+    // Rehabilitar botón
+    const sendBtn = document.getElementById('send-btn');
+    if (sendBtn) { sendBtn.disabled = false; sendBtn.textContent = 'Enviar'; }
   }
 });
 
-// ================================
+
 // HISTORIAL DE CONVERSACIONES
-// ================================
-// ================================
+
 // HISTORIAL DE CONVERSACIONES (API)
-// ================================
 const toggleBtn = document.getElementById('toggle-history');
 const historyPanel = document.getElementById('history-panel');
 const newChatBtn = document.getElementById('new-chat');
@@ -197,7 +261,9 @@ async function loadConversations() {
     const logoutBtn = document.getElementById('logout-btn');
     if (logoutBtn) {
       logoutBtn.textContent = 'Iniciar Sesión';
-      logoutBtn.style.backgroundColor = '#007bff';
+      logoutBtn.style.backgroundColor = '#6366f1';
+      logoutBtn.style.color = '#ffffff';
+      logoutBtn.style.borderColor = '#6366f1';
     }
     return;
   }
@@ -208,13 +274,13 @@ async function loadConversations() {
     if (profRes.ok) {
       const { user } = await profRes.json();
       window.userProfile = user;
-      
+
       const apodoSpan = document.getElementById('sidebar-apodo');
       const sideImg = document.getElementById('sidebar-avatar-img');
       const sideInit = document.getElementById('sidebar-avatar-initial');
-      
+
       if (apodoSpan) apodoSpan.textContent = user.apodo || user.name || 'Usuario';
-      
+
       if (user.avatar_url) {
         if (sideImg) { sideImg.src = `http://localhost:3000${user.avatar_url}`; sideImg.style.display = 'block'; }
         if (sideInit) sideInit.style.display = 'none';
@@ -236,9 +302,9 @@ async function loadConversations() {
     if (res.ok) {
       chatHistory = await res.json();
       renderHistory();
-      if (!currentChatId && chatHistory.length > 0) {
-        loadConversation(chatHistory[0].id);
-      } else if (chatHistory.length === 0) {
+
+      // En lugar de cargar el último chat, siempre iniciamos uno nuevo/vacío
+      if (!currentChatId) {
         chatBox.innerHTML = '';
         const nombre = window.userProfile?.apodo || window.userProfile?.name || '';
         addMessage(`¡Hola${nombre ? ' ' + nombre : ''}! Soy MontIA. ¿En qué puedo ayudarte hoy?`, 'bot');
@@ -299,7 +365,16 @@ async function loadConversation(id) {
       if (messages.length === 0) {
         addMessage('Chat iniciado. ¿En qué puedo ayudarte?', 'bot');
       } else {
-        messages.forEach(m => addMessage(m.content, m.sender));
+        messages.forEach(m => {
+          try {
+            const parsed = JSON.parse(m.content);
+            if (parsed.__type === 'search_results') {
+              renderSearchResults(parsed.data);
+              return;
+            }
+          } catch (_) {}
+          addMessage(m.content, m.sender);
+        });
       }
     }
   } catch (err) {
@@ -469,7 +544,7 @@ function renderSearchResults(data) {
 
     const btnCopy = document.createElement('button');
     btnCopy.classList.add('citation-btn', 'copy-btn');
-    btnCopy.textContent = '📄 Copiar Cita';
+    btnCopy.textContent = '📋 Copiar Referencia';
     btnCopy.onclick = () => {
       const citation = generateCitation(item, select.value);
       copyCitation(btnCopy, citation);
@@ -480,18 +555,23 @@ function renderSearchResults(data) {
 
     actions.appendChild(citationContainer);
 
-    if (item.doi) {
+    const sourceUrl = item.doi
+      ? (item.doi.startsWith('http') ? item.doi : `https://doi.org/${item.doi}`)
+      : (item.url || '');
+
+    if (sourceUrl) {
       const link = document.createElement('a');
-      link.href = item.doi.startsWith('http') ? item.doi : `https://doi.org/${item.doi}`;
+      link.href = sourceUrl;
       link.textContent = '🔗 Ver fuente';
       link.target = '_blank';
+      link.rel = 'noopener noreferrer';
       link.style.marginLeft = '10px';
       link.style.fontSize = '0.8rem';
       actions.appendChild(link);
     }
 
-    // Botón Analizar Contenido (Solo si es OA o tiene PDF)
-    if (item.openAccess || item.doi) {
+    // Botón Analizar Contenido (Solo si es OA o tiene URL de acceso)
+    if (item.openAccess || item.doi || item.url) {
       const btnAnalyze = document.createElement('button');
       btnAnalyze.classList.add('citation-btn', 'analyze-source-btn');
       btnAnalyze.textContent = '📄 Analizar Contenido';
@@ -579,7 +659,6 @@ function renderSearchResults(data) {
       chatBox.appendChild(botMsg);
       typeWriterEffect(`MontIA: ${answer}`, botMsg);
 
-      // Auto-read si está activo
       if (typeof VoiceMode !== 'undefined' && VoiceMode.isAutoReadEnabled()) {
         VoiceMode.speak(answer);
       }
@@ -589,6 +668,8 @@ function renderSearchResults(data) {
     }
   };
   actionsContainer.appendChild(btnAnalyze);
+
+
 
   container.appendChild(actionsContainer);
 
@@ -604,7 +685,12 @@ function generateCitation(item, format) {
   const year = item.year || 's.f.';
   const authorInput = item.author || '';
   const journal = item.journal || item.source || 'Revista no disponible';
-  const doi = item.doi ? (item.doi.startsWith('http') ? item.doi : `https://doi.org/${item.doi}`) : '';
+  // Solo usar DOI real (doi.org); para libros de Google Books usar ISBN si existe
+  const rawDoi = item.doi || '';
+  const doi = rawDoi.includes('doi.org')
+    ? rawDoi
+    : (rawDoi && !rawDoi.includes('google.com') && !rawDoi.includes('books.') ? `https://doi.org/${rawDoi}` : '');
+  const isbn = !doi && item.isbn ? `ISBN: ${item.isbn}` : '';
 
   // Helper para formatear autores
   const getFormattedAuthors = (style) => {
@@ -648,26 +734,28 @@ function generateCitation(item, format) {
 
   const authors = getFormattedAuthors(format);
 
+  const doiOrIsbn = doi || (isbn ? isbn : '');
+
   switch (format) {
     case 'APA':
       return authors
-        ? `${authors} (${year}). ${title}. *${journal}*.${doi ? ' ' + doi : ''}`
-        : `${title}. (${year}). *${journal}*.${doi ? ' ' + doi : ''}`;
+        ? `${authors} (${year}). ${title}. *${journal}*.${doiOrIsbn ? ' ' + doiOrIsbn : ''}`
+        : `${title}. (${year}). *${journal}*.${doiOrIsbn ? ' ' + doiOrIsbn : ''}`;
 
     case 'MLA':
       return authors
-        ? `${authors}. "${title}." *${journal}*, ${year}.${doi ? ' ' + doi : ''}`
-        : `"${title}." *${journal}*, ${year}.${doi ? ' ' + doi : ''}`;
+        ? `${authors}. "${title}." *${journal}*, ${year}.${doiOrIsbn ? ' ' + doiOrIsbn : ''}`
+        : `"${title}." *${journal}*, ${year}.${doiOrIsbn ? ' ' + doiOrIsbn : ''}`;
 
     case 'IEEE':
       return authors
-        ? `${authors}, "${title}," *${journal}*, ${year}.${doi ? ' [' + doi + ']' : ''}`
-        : `"${title}," *${journal}*, ${year}.${doi ? ' [' + doi + ']' : ''}`;
+        ? `${authors}, "${title}," *${journal}*, ${year}.${doiOrIsbn ? ' [' + doiOrIsbn + ']' : ''}`
+        : `"${title}," *${journal}*, ${year}.${doiOrIsbn ? ' [' + doiOrIsbn + ']' : ''}`;
 
     case 'Vancouver':
       return authors
-        ? `${authors}. ${title}. ${journal}. ${year}.${doi ? ' Disponible en: ' + doi : ''}`
-        : `${title}. ${journal}. ${year}.${doi ? ' Disponible en: ' + doi : ''}`;
+        ? `${authors}. ${title}. ${journal}. ${year}.${doi ? ' Disponible en: ' + doi : (isbn ? ' ' + isbn : '')}`
+        : `${title}. ${journal}. ${year}.${doi ? ' Disponible en: ' + doi : (isbn ? ' ' + isbn : '')}`;
 
     case 'BibTeX':
       const firstAuth = (authorInput.split(',')[0] || 'Unknown').split(' ')[0].replace(/[^a-zA-Z]/g, '');
@@ -677,7 +765,7 @@ function generateCitation(item, format) {
   title = {${title}},
   journal = {${journal}},
   year = {${year}},
-  doi = {${item.doi || ''}}
+  doi = {${doi}}${isbn ? ',\n  note = {' + isbn + '}' : ''}
 }`;
 
     default:
@@ -719,6 +807,7 @@ if (pdfUpload) {
 
     const formData = new FormData();
     formData.append('file', file);
+    if (currentChatId) formData.append('conversationId', currentChatId);
 
     addMessage(`Subiendo y analizando: ${file.name}...`, 'bot');
 
@@ -735,9 +824,15 @@ if (pdfUpload) {
       if (data.ok) {
         docIndicator.style.display = 'flex';
         docNameSpan.textContent = file.name;
-        addMessage(`¡Listo! He procesado el documento. Puedes hacerme preguntas sobre su contenido o pedirme citas textuales.`, 'bot');
+
+        let nombre = 'Usuario';
+        if (typeof window !== 'undefined' && window.userProfile && window.userProfile.apodo) {
+          nombre = window.userProfile.apodo;
+        }
+
+        addMessage(`¡Excelente, ${nombre}! 📄 He cargado y analizado tu documento **"${file.name}"**.\n\n¿Qué te gustaría hacer con él?\n\n**1.** 📝 **Resumen completo** - Descripción detallada del contenido\n**2.** 📌 **Citas textuales** - Extraer fragmentos importantes (APA, IEEE, etc.)\n**3.** 🎯 **Puntos clave** - Ideas principales y conclusiones\n**4.** 📚 **Generar referencia bibliográfica** - Para tu bibliografía\n**5.** ❓ **Pregunta libre** - Hazme cualquier pregunta sobre el documento\n\n*Escribe el número o tu pregunta directamente.*`, 'bot');
       } else {
-        addMessage(`Error: ${data.error}`, 'bot');
+        addMessage(`Error al procesar el documento: ${data.error}`, 'bot');
       }
     } catch (err) {
       console.error(err);
@@ -747,9 +842,19 @@ if (pdfUpload) {
 }
 
 if (removeDocBtn) {
-  removeDocBtn.onclick = () => {
+  removeDocBtn.onclick = async () => {
     pdfUpload.value = '';
     docIndicator.style.display = 'none';
+    try {
+      await fetch('http://localhost:3000/api/clear-document', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': localStorage.getItem('auth_token') ? `Bearer ${localStorage.getItem('auth_token')}` : ''
+        },
+        body: JSON.stringify({ conversationId: currentChatId })
+      });
+    } catch (e) {}
   };
 }
 
@@ -758,15 +863,16 @@ async function analyzeSource(btn, item) {
   btn.textContent = '⏳ Analizando...';
   btn.disabled = true;
 
-  // Priorizar pdfUrl si existe (OpenAlex)
+  // Priorizar pdfUrl si existe (OpenAlex), luego DOI
   const pdfUrl = item.pdfUrl || (item.doi ? `https://doi.org/${item.doi.replace('https://doi.org/', '')}` : null);
 
   if (!pdfUrl) {
     btn.textContent = '❌ Sin Enlace';
+    addMessage(`No encontré un enlace válido para analizar "${item.title}". Este artículo no tiene DOI ni PDF disponible.`, 'bot');
     setTimeout(() => {
       btn.textContent = originalText;
       btn.disabled = false;
-    }, 2000);
+    }, 3000);
     return;
   }
 
@@ -774,26 +880,43 @@ async function analyzeSource(btn, item) {
     const res = await fetch('http://localhost:3000/api/analyze-source', {
       method: 'POST',
       headers: getAuthHeaders(),
-      body: JSON.stringify({ url: pdfUrl })
+      body: JSON.stringify({ url: pdfUrl, conversationId: currentChatId })
     });
 
     const data = await res.json();
+
     if (data.ok) {
       btn.textContent = '✅ Analizado';
       docIndicator.style.display = 'flex';
       docNameSpan.textContent = item.title.substring(0, 20) + '...';
-      addMessage(`He analizado "${item.title}". Ya puedes pedirme resúmenes o citas textuales específicas de este artículo.`, 'bot');
+
+      let nombre = 'Usuario';
+      if (typeof window !== 'undefined' && window.userProfile && window.userProfile.apodo) {
+        nombre = window.userProfile.apodo;
+      }
+
+      const sourceInfo = data.sourceType === 'pdf' ? '📄 PDF completo' :
+        data.sourceType === 'webpage' ? '🌐 Página web (abstract y metadata)' : '📝 Texto';
+
+      addMessage(`¡He analizado "${item.title.substring(0, 40)}...", ${nombre}! ${sourceInfo}\n\n¿Qué deseas saber?\n\n**1.** Obtener una **descripción detallada** y resumen.\n**2.** Generar **citas textuales** con referencia bibliográfica (APA, IEEE, etc.)\n**3.** Hacer cualquier **pregunta específica** sobre el contenido.\n\n*Escribe tu pregunta o responde con el número.*`, 'bot');
     } else {
       btn.textContent = '❌ Error';
+      const errorMsg = data.error || 'No se pudo analizar el contenido.';
+      const hint = data.hint ? `\n\n💡 *${data.hint}*` : '';
+      addMessage(`No pude analizar "${item.title.substring(0, 30)}...".\n\n**Razón:** ${errorMsg}${hint}\n\n¿Quieres que intente buscar más información sobre este tema?`, 'bot');
       setTimeout(() => {
         btn.textContent = originalText;
         btn.disabled = false;
-      }, 2000);
+      }, 3000);
     }
   } catch (err) {
-    console.error(err);
-    btn.textContent = '❌ Error conexion';
-    btn.disabled = false;
+    console.error('Error en analyzeSource:', err);
+    btn.textContent = '❌ Error';
+    addMessage(`Hubo un problema de conexión al intentar analizar el documento. Por favor, verifica que el servidor esté activo e intenta de nuevo.`, 'bot');
+    setTimeout(() => {
+      btn.textContent = originalText;
+      btn.disabled = false;
+    }, 3000);
   }
 }
 

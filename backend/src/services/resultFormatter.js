@@ -7,15 +7,23 @@ function formatResultLine(item, index) {
   let authorStr = formatAuthors(item.author);
   const year = formatYear(item.year);
   const title = capitalizeFirstLetter(item.title || 'Título no disponible');
+  const isBook = item.type === 'book';
+
+  // Para artículos: mostrar revista. Para libros: solo editorial si existe
   const journal = item.journal ? ` *${item.journal}*` : '';
-  const doi = item.doi ? ` ${item.doi}` : '';
+
+  // Solo incluir DOI si es una URL real de doi.org (no links de Google Books u otros)
+  const realDoi = item.doi && item.doi.includes('doi.org') ? item.doi : '';
+  // Para libros sin DOI: incluir ISBN si está disponible
+  const isbn = !realDoi && item.isbn ? ` ISBN: ${item.isbn}` : '';
+  const doiOrIsbn = realDoi ? ` ${realDoi}` : isbn;
 
   // Regla APA 7: Si no hay autor, el título pasa a la posición del autor
   if (!authorStr || authorStr === 'Autor desconocido') {
-    return `${index}. ${title}. (${year}).${journal}.${doi}`;
+    return `${index}. ${title}. (${year}).${journal}.${doiOrIsbn}`;
   }
 
-  return `${index}. ${authorStr} (${year}). ${title}.${journal}.${doi}`;
+  return `${index}. ${authorStr} (${year}). ${title}.${journal}.${doiOrIsbn}`;
 }
 
 /**

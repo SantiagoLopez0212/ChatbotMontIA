@@ -44,19 +44,47 @@ function extractSearchParameters(message) {
 }
 
 /**
- * Extrae el texto de búsqueda sin los filtros detectados.
+ * Extrae solo el tema real de búsqueda, eliminando verbos de intención,
+ * palabras de tipo de documento y filtros de fecha/idioma.
+ *
+ * Ejemplos:
+ *   "buscar papers sobre machine learning"  → "machine learning"
+ *   "dame artículos sobre redes neuronales" → "redes neuronales"
+ *   "investigaciones sobre blockchain"       → "blockchain"
+ *   "inteligencia artificial"               → "inteligencia artificial"
  */
 function extractQueryWithoutFilters(message) {
   let query = message;
-  const patterns = [
+
+  // 1. Eliminar filtros de fecha e idioma
+  const metaPatterns = [
     /desde\s*\d{4}/gi,
     /(hasta|a)\s*\d{4}/gi,
-    /en\s+(español|inglés|portugués)/gi,
-    /(open access|acceso abierto|de libre acceso)/gi,
-    /(artículo|journal|conferencia|libro|paper)/gi
+    /en\s+(espa[ñn]ol|ingl[eé]s|portugu[eé]s)/gi,
+    /(open\s+access|acceso\s+abierto|de\s+libre\s+acceso)/gi,
   ];
-  patterns.forEach(p => (query = query.replace(p, '')));
-  return query.trim();
+  metaPatterns.forEach(p => (query = query.replace(p, '')));
+
+  // 2. Si hay "sobre <tema>", extraer solo el tema (estrategia más precisa)
+  const sobreMatch = query.match(/\bsobre\s+(.+)/i);
+  if (sobreMatch) {
+    // Eliminar residuos de tipo de documento que puedan haber quedado después de "sobre"
+    let topic = sobreMatch[1]
+      .replace(/\b(art[ií]culos?|papers?|investigaciones?|journals?|libros?|conferencias?|ponencias?)\b/gi, '')
+      .trim();
+    if (topic.length > 1) return topic;
+  }
+
+  // 3. Sin "sobre": eliminar verbos de intención y palabras de tipo de documento
+  const intentWords = [
+    /\b(busca[r]?|busco|encuentra[s]?|encontrar|dame|mu[eé]strame|quiero|necesito|lista[r]?|trae[r]?|obt[eé]n)\b/gi,
+    /\b(art[ií]culos?|papers?|investigaciones?|journals?|publicaciones?|documentos?|libros?|estudios?)\b/gi,
+    /\b(cient[íi]ficos?|acad[eé]micos?|recientes?|nuevos?)\b/gi,
+  ];
+  intentWords.forEach(p => (query = query.replace(p, '')));
+
+  // Limpiar espacios múltiples
+  return query.replace(/\s{2,}/g, ' ').trim();
 }
 
 /**

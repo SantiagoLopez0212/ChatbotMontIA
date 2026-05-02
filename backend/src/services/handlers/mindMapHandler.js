@@ -33,36 +33,54 @@ class MindMapHandler {
     /**
      * Usa Gemini para analizar artículos y extraer relaciones semánticas.
      */
+    _normalizeTitle(title) {
+        return (title || '').toLowerCase().replace(/[^a-z0-9\s]/g, '').trim().substring(0, 40);
+    }
+
+    _injectUrls(nodes, results) {
+        nodes.forEach(node => {
+            if (node.type !== 'article') return;
+            const nodeNorm = this._normalizeTitle(node.label);
+            const match = results.find(r => {
+                const rNorm = this._normalizeTitle(r.title);
+                return rNorm.includes(nodeNorm.substring(0, 25)) || nodeNorm.includes(rNorm.substring(0, 25));
+            });
+            if (match) {
+                const doi = (match.doi || '').replace('https://doi.org/', '');
+                node.url = doi ? `https://doi.org/${doi}` : (match.pdfUrl || '');
+            }
+        });
+    }
+
     async _extractRelationshipsWithAI(query, results) {
         const articlesText = results.map((item, i) =>
             `${i + 1}. "${item.title}" (${item.year || 's.f.'}) - ${item.author || 'Desconocido'} [Fuente: ${item.journal || item.source || 'N/A'}]`
         ).join('\n');
 
-        const systemPrompt = `Eres un analista de investigación académica. Tu tarea es analizar artículos científicos y generar un grafo de conocimiento en formato JSON.
+        const systemPrompt = `Eres un analista de investigación académica de talla mundial. Analiza estos artículos y genera un Mapa de Conocimiento NOVEDOSO, PROFUNDO y CRÍTICO en formato JSON.
 
 INSTRUCCIONES ESTRICTAS:
-1. Responde ÚNICAMENTE con un JSON válido, sin texto adicional, sin markdown, sin backticks.
-2. Identifica temas comunes, metodologías compartidas, y brechas de investigación.
-3. Crea nodos de tipo: "topic" (tema central), "article" (artículos), "theme" (temas emergentes), "gap" (brechas de investigación).
-4. Crea aristas con etiquetas descriptivas que expliquen la relación.
+1. Responde ÚNICAMENTE con un JSON válido, sin delimitadores \`\`\`json ni texto adicional.
+2. Identifica conexiones no evidentes, convergencias metodológicas y divergencias teóricas entre los artículos.
+3. Extrae ideas novedosas y creativas, no te quedes en resúmenes superficiales.
+4. Tipo de nodos: "topic" (1 tema central), "article" (1 por artículo), "theme" (paradigmas o hallazgos clave), "gap" (brechas disruptivas para el futuro).
+5. Las aristas deben tener etiquetas cortas pero explicativas (ej. "usa", "contradice", "extiende", "ignora", "valida").
 
-FORMATO JSON requerido:
+FORMATO JSON:
 {
   "nodes": [
-    { "id": 1, "label": "texto corto", "type": "topic|article|theme|gap", "detail": "descripción" }
+    { "id": 1, "label": "Tema Central", "type": "topic", "detail": "Concepto principal" }
   ],
   "edges": [
     { "from": 1, "to": 2, "label": "relación" }
   ]
 }
 
-REGLAS:
-- El nodo 1 siempre es el tema central (type: "topic")
-- Cada artículo debe ser un nodo (type: "article")
-- Agrega 2-4 nodos de temas emergentes (type: "theme")
-- Agrega 1-2 nodos de brechas de investigación (type: "gap")
-- Conecta artículos con temas relacionados
-- Cada nodo de brecha debe conectarse a al menos un tema`;
+REGLAS DE DISEÑO:
+- Nodo 1: El tema central de búsqueda (type: "topic").
+- Crea máximo 2 nodos "theme" que agrupen inteligentemente varios artículos.
+- Propón 1 o 2 nodos "gap" innovadores.
+- Mantén el tamaño máximo STRICTO de 5 a 8 nodos en total para garantizar que se genere en pocos segundos.`;
 
         const userMessage = `Tema de búsqueda: "${query}"\n\nArtículos encontrados:\n${articlesText}\n\nGenera el JSON del grafo de conocimiento:`;
 
@@ -77,6 +95,7 @@ REGLAS:
             throw new Error('Respuesta de IA no contiene nodos válidos');
         }
 
+        this._injectUrls(parsed.nodes, results);
         return parsed;
     }
 
@@ -84,8 +103,9 @@ REGLAS:
      * Extrae un bloque JSON de una respuesta que puede contener texto adicional.
      */
     _extractJSON(text) {
-        // Intentar encontrar JSON entre llaves
-        const match = text.match(/\{[\s\S]*\}/);
+        // Encontrar JSON ignorando markdown como ```json ... ```
+        const cleanedText = text.replace(/```json/g, '').replace(/```/g, '');
+        const match = cleanedText.match(/\{[\s\S]*\}/);
         if (match) return match[0];
         throw new Error('No se encontró JSON en la respuesta');
     }
@@ -102,11 +122,13 @@ REGLAS:
 
         results.forEach((item, i) => {
             const id = i + 2;
+            const doi = (item.doi || '').replace('https://doi.org/', '');
             nodes.push({
                 id,
                 label: (item.title || 'Sin título').substring(0, 40) + '...',
                 type: 'article',
-                detail: `${item.author || 'Autor desconocido'} (${item.year || 's.f.'}) - ${item.journal || item.source || ''}`
+                detail: `${item.author || 'Autor desconocido'} (${item.year || 's.f.'}) - ${item.journal || item.source || ''}`,
+                url: doi ? `https://doi.org/${doi}` : (item.pdfUrl || '')
             });
             edges.push({ from: 1, to: id, label: 'relacionado' });
         });

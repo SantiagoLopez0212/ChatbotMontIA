@@ -1,10 +1,3 @@
-/**
- * server.js - Punto de entrada de la aplicación
- *
- * SRP: Solo arranca el servidor HTTP y llama a initDB().
- * La lógica de Express vive en app.js.
- * La lógica de la BD vive en config/db.js.
- */
 const app = require('./app');
 const { PORT } = require('./config/appConfig');
 const { initDB } = require('./config/db');

@@ -1,136 +1,174 @@
-# MontIA — Chatbot Académico
+# MontIA — Chatbot Académico Inteligente
 
-MontIA es un chatbot académico diseñado con **Bajo Acoplamiento**, **Alta Cohesión** y principios **SOLID**. Utiliza inteligencia artificial (Google Gemini) integrada con múltiples bases de datos científicas y literatura (CrossRef, OpenAlex, Google Books) para asistir en la investigación académica, generar resúmenes, buscar fuentes y construir mapas conceptuales.
+MontIA es un chatbot académico diseñado con **Bajo Acoplamiento**, **Alta Cohesión** y principios **SOLID**. Integra inteligencia artificial generativa (OpenAI GPT-4o mini / Google Gemini) con múltiples bases de datos científicas (CrossRef, OpenAlex, Google Books) para asistir en la investigación académica, generar citas, analizar documentos y construir mapas conceptuales interactivos.
 
 ## Características Principales
+
 - **Autenticación con JWT**: Registro, inicio de sesión y recuperación de contraseña vía correo.
-- **Roles de usuario**: Soporte para usuarios invitados y autenticados (con historial de chat guardado en BD).
-- **Procesamiento de Documentos**: Análisis de archivos PDF subidos o mediante URLs externas para extraer contexto y chatear con los documentos.
-- **Búsqueda Avanzada**: Obtención de artículos filtrando por año, idioma, tipo y acceso abierto.
-- **Mapas Conceptuales**: Generación visual de relaciones entre los artículos encontrados.
-- **IA Generativa**: Respuestas contextuales basadas en los resultados utilizando Google Gemini.
+- **Google OAuth**: Inicio de sesión con cuenta de Google.
+- **Onboarding personalizado**: Flujo de bienvenida que configura el perfil académico del usuario.
+- **Búsqueda multi-proveedor**: Consulta simultánea a CrossRef, OpenAlex y Google Books con filtros por año, idioma, tipo de publicación y acceso abierto.
+- **Citas bibliográficas**: Generación automática en formatos APA, IEEE, Chicago, Vancouver, MLA y Harvard.
+- **Análisis de documentos PDF**: Sube un PDF o pega una URL para chatear con el contenido.
+- **Mapas de conocimiento**: Visualización interactiva de relaciones semánticas entre artículos usando IA + Vis.js.
+- **Modo de voz**: Entrada por micrófono mediante Web Speech API.
+- **Historial persistente**: Conversaciones guardadas en MySQL con soporte para múltiples sesiones.
+- **IA Generativa dual**: Soporta OpenAI GPT-4o mini (recomendado) y Google Gemini Flash como fallback.
+
+---
+
+## Patrones de Diseño Aplicados
+
+- **Chain of Responsibility**: Cadena de 10 handlers que procesan cada mensaje en orden de prioridad.
+- **Strategy**: 3 estrategias de búsqueda intercambiables (CrossRef, OpenAlex, GoogleBooks).
+- **Factory Method**: `SearchStrategyFactory` instancia los proveedores de búsqueda.
+- **Adapter**: `AIAdapter` desacopla los proveedores de IA (OpenAI, Gemini, Mock).
+- **Singleton**: Pool de conexiones MySQL y adaptador de IA con instancia única.
+- **Dependency Injection**: Los handlers reciben sus dependencias por constructor.
 
 ---
 
 ## Requisitos Previos
 
-Para ejecutar este proyecto en tu entorno local necesitas:
-
-1. **Node.js** (v18 o superior)
-2. **MySQL** (v8.0 o superior) corriendo localmente en el puerto 3306.
-3. **Google Gemini API Key**: [Consigue una clave gratuita aquí](https://aistudio.google.com/app/apikey).
-4. Cuenta de **Gmail** (opcional, para enviar correos de recuperación de contraseña). Debe usarse una "Contraseña de aplicación", no la contraseña normal.
+1. **Node.js** v18 o superior
+2. **MySQL** v8.0 o superior corriendo en el puerto 3306
+3. **API Key de IA** — elige una de las dos opciones:
+   - **OpenAI** (recomendado): `platform.openai.com` → GPT-4o mini, ~$0.15/1M tokens
+   - **Google Gemini** (gratuito con límites): `aistudio.google.com`
+4. **Cuenta de Gmail** (opcional, para correos de recuperación de contraseña)
 
 ---
 
-## 🛠 Instalación y Configuración
+## Instalación y Configuración
 
 ### 1. Clonar el repositorio
 ```bash
-git clone https://github.com/Santiagolopezgo/ChatbotMontIA.git
+git clone https://github.com/SantiagoLopez0212/ChatbotMontIA.git
 cd ChatbotMontIA
 ```
 
-### 2. Configurar el Backend
-
-1. Abre una terminal y ve a la carpeta del backend:
-   ```bash
-   cd backend
-   npm install
-   ```
-   
-2. Configura las variables de entorno. Copia el archivo de ejemplo:
-   ```bash
-   cp .env.example .env
-   ```
-   
-3. **Edita el archivo `.env`** recién creado con tus credenciales reales:
-   ```env
-   # Configuración del servidor
-   PORT=3000
-
-   # Configuración de la Base de Datos (ajusta DB_PASSWORD)
-   DB_HOST=127.0.0.1
-   DB_USER=root
-   DB_PASSWORD=tu_contraseña_mysql_aqui
-   DB_NAME=proyecto_chatbot
-   DB_PORT=3306
-
-   # Seguridad JWT
-   JWT_SECRET=escribe_aqui_un_texto_largo_y_secreto
-
-   # Clave de API de Inteligencia Artificial
-   GEMINI_API_KEY=tu_clave_de_gemini_aqui
-
-   # Configuración de correo (para recuperar contraseñas)
-   EMAIL_USER=tu_correo@gmail.com
-   EMAIL_PASS=tu_contraseña_de_aplicacion_gmail
-   ```
-
-*Nota: La base de datos y todas sus tablas se crearán automáticamente al arrancar el servidor si las credenciales de MySQL son correctas.*
-
-### 3. Iniciar el Backend
-Arranca el servidor de la API:
+### 2. Instalar dependencias del Backend
 ```bash
-npm start
-# (O usa "npm run dev" si deseas autorecarga en desarrollo)
+cd backend
+npm install
 ```
-Deberías ver en la consola:
+
+### 3. Configurar variables de entorno
+```bash
+cp .env.example .env
 ```
-✅ MontIA escuchando en http://localhost:3000
+
+Edita el archivo `.env` con tus credenciales:
+
+```env
+PORT=3000
+
+# Base de Datos
+DB_HOST=127.0.0.1
+DB_USER=root
+DB_PASSWORD=tu_contraseña_mysql
+DB_NAME=proyecto_chatbot
+DB_PORT=3306
+
+# JWT
+JWT_SECRET=cadena_larga_y_secreta
+
+# IA — el sistema usa OpenAI si está definida, si no usa Gemini
+OPENAI_API_KEY=sk-proj-...        # Recomendado para producción
+GEMINI_API_KEY=AIza...            # Alternativa gratuita
+
+# Correo (opcional)
+EMAIL_USER=tu_correo@gmail.com
+EMAIL_PASS=contraseña_de_aplicacion_gmail
+```
+
+> La base de datos y todas sus tablas se crean automáticamente al iniciar el servidor.
+
+### 4. Iniciar el servidor
+```bash
+npm run dev    # Desarrollo (autorecarga)
+npm start      # Producción
+```
+
+La consola debe mostrar:
+```
+Modo IA: Activado (OpenAI)         ← si configuraste OPENAI_API_KEY
 ✅ Base de datos inicializada (tablas verificadas)
+✅ MontIA escuchando en http://localhost:3000
 ```
 
 ---
 
-## 💻 Uso de la Aplicación (Frontend)
+## Uso del Frontend
 
-El frontend está construido con HTML, CSS, y JavaScript puro y no requiere compilación. Simplemente necesitas servir los archivos estáticos.
+El frontend es HTML/CSS/JS puro — no requiere compilación.
 
-### Iniciar el Frontend
+**Opción A — Live Server (VS Code):**
+Clic derecho sobre `frontend/index.html` → *Open with Live Server*
 
-**Opción A (Extensión de VS Code):**
-Si usas VS Code, instala la extensión "Live Server". Haz clic derecho sobre `frontend/index.html` y selecciona **"Open with Live Server"**.
-
-**Opción B (Servidor simple con Node.js):**
-Abre una nueva terminal en la raíz del proyecto y ejecuta:
+**Opción B — Servidor Node:**
 ```bash
 npx serve frontend
 ```
 
-### ¿Cómo usar MontIA?
+### Funcionalidades principales
 
-1. **Iniciar Sesión:**
-   Al abrir la aplicación, serás redirigido a `auth.html`.
-   * Si es tu primera vez, **Regístrate** en la pestaña correspondiente.
-   * Tras iniciar sesión, tu JWT se guardará y serás redirigido al chat principal (`index.html`).
-   * *(Opcional)* Puedes usar el botón **"Continuar sin cuenta"** para probar el bot de forma anónima (el historial no se guardará).
-
-2. **Chatear con la IA:**
-   * **Saludos:** "Hola", "¿Qué puedes hacer?"
-   * **Búsquedas:** "Busca artículos sobre inteligencia artificial en español desde el 2020"
-   * **Análisis de PDF:** Sube un archivo mediante el icono del clip y luego pregunta sobre su contenido.
-   * **Resúmenes:** Pide explícitamente sobre el contexto aportado.
-
-3. **Herramientas de Búsqueda:**
-   Cuando la IA te devuelve resultados de investigación, puedes usar las opciones disponibles en cada tarjeta:
-   * 🔗 Abrir el artículo original (DOI u origen web).
-   * 🧠 **"Mapa de Conocimiento":** Se abrirá un diagrama interactivo relacionando conceptos del paper.
-   * 📄 "Formato IEEE": Obtiene la cita formateada para tu bibliografía.
+| Acción | Cómo usarla |
+|---|---|
+| Buscar artículos | `"Busca artículos sobre machine learning desde 2020"` |
+| Filtrar resultados | Botón **Filtros** → año, idioma, tipo, acceso abierto |
+| Generar cita | En cada tarjeta → selector de formato → **Copiar Referencia** |
+| Ver mapa conceptual | Botón **🧠 Ver Mapa de Conocimiento** tras una búsqueda |
+| Analizar PDF | Icono 📎 → sube el archivo → elige opción 1-4 |
+| Salir del modo PDF | Escribe `salir` en el chat o clic en la **X** del indicador |
+| Más resultados | Escribe `más` o `dame más` |
 
 ---
 
-## 🏗 Arquitectura y Estructura
+## Estructura del Proyecto
 
-El proyecto sigue una arquitectura **Layered (por capas)** basada en Domain-Driven Design (DDD) y aplica estrictamente los principios SOLID.
-
-*   **/routes:** Definición de endpoints separados por dominios (`auth`, `chat`, `history`).
-*   **/controllers:** Empaquetan y validan peticiones HTTP delegándolas a los servicios.
-*   **/services:** Lógica central. Emplean **Chain of Responsibility** para enrutar mensajes del usuario entre distintos `Handlers`.
-*   **/domain**: Gestión del área de negocio y de los estados de interfaz (ej. `SessionManager.js`).
-*   **/adapters:** Implementación del patrón **Strategy** para desacoplar las llamadas a APIs externas (Gemini, CrossRef, OpenAlex).
-
-El servidor está refactorizado implementando Alta Cohesión (cada módulo hace una cosa específica) y Bajo Acoplamiento (los módulos no dependen de la implementación interna de otros, como en el sistema de búsquedas externalizado mediante inyección de dependencias).
+```
+ChatbotMontIA/
+├── backend/
+│   ├── src/
+│   │   ├── adapters/          # Adaptadores a APIs externas (IA, búsqueda)
+│   │   │   └── providers/
+│   │   │       ├── search/    # CrossrefStrategy, OpenAlexStrategy, GoogleBooksStrategy
+│   │   │       ├── geminiProvider.js
+│   │   │       └── openaiProvider.js
+│   │   ├── config/            # Configuración de BD y variables de entorno
+│   │   ├── controllers/       # Lógica de cada ruta HTTP
+│   │   ├── domain/            # SessionManager, filterParser, textUtils
+│   │   ├── factories/         # SearchStrategyFactory
+│   │   ├── middleware/        # JWT, rate limiting, validación
+│   │   ├── routes/            # auth, chat, history, profile
+│   │   └── services/
+│   │       ├── handlers/      # 10 handlers (Chain of Responsibility)
+│   │       └── chatbotService.js  # Orquestador principal
+│   ├── .env.example
+│   └── package.json
+├── frontend/
+│   ├── index.html             # SPA principal
+│   ├── chatbot.js             # Lógica de chat e historial
+│   ├── mindMap.js             # Visualización del mapa (Vis.js)
+│   ├── voiceMode.js           # Reconocimiento de voz
+│   ├── auth.html              # Login / Registro
+│   ├── profile.html           # Perfil de usuario
+│   └── style.css
+└── docs/
+    └── sql/schema.sql         # Esquema de base de datos
+```
 
 ---
-*Desarrollado para asistencia en la docencia e investigación académica.*
+
+## Seguridad
+
+- Contraseñas hasheadas con **bcryptjs** (10 rounds)
+- Sesiones con **JWT** (expiración 2 horas)
+- **Rate limiting**: 100 solicitudes / 5 minutos por IP
+- Validación de propiedad en operaciones DELETE/UPDATE
+- Variables sensibles en `.env` (nunca en el repositorio)
+
+---
+
+*Desarrollado como proyecto académico para asistencia en investigación científica.*
